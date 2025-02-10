@@ -15,7 +15,11 @@ export const getCurrentUser = cache(async () => {
 
   if (currentUser.rowCount !== 0) {
     const { user_id, email, username } = currentUser.rows[0];
-    return { username };
+    return { username, user_id};
   }
   return null;
 });
+
+export const getUser = () => {
+  
+}

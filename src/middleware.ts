@@ -16,13 +16,15 @@ export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
 
-  // If not logged in and route is protected
-  if (isProtectedRoute && !session?.userId) {
+  // If no session and route is protected
+  if (isProtectedRoute && !session) {
+    console.log("PROTECTED ROUTE");
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
   // If user doesn't have profile created
   if (req.nextUrl.pathname.startsWith("/welcome")) {
+    console.log("WELCOME ROUTE");
     const user = await getCurrentUser();
 
     if (user) {

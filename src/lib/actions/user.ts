@@ -1,10 +1,10 @@
 "use server";
-import { sql } from "@vercel/postgres";
 import { auth0 } from "@/lib/auth0";
+import { sql } from "@vercel/postgres";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 
-// action same as api route
+// Creaters user in /welcome
 export const createUser = cache(async (prevState: any, formData: FormData) => {
   const session = await auth0.getSession();
 
