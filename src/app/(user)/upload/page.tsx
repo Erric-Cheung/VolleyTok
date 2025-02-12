@@ -1,22 +1,26 @@
 "use client";
 
 import TextInput from "@/components/Input/TextInput";
-import UploadBox from "@/components/Upload/UploadBox";
-
-import { Upload, Button } from "antd";
-import { startTransition, useActionState, useState } from "react";
-import { createPost, getPresignedURL } from "@/lib/actions/posts";
+import { Upload } from "antd";
+import { startTransition, useState } from "react";
+import { createPost, createPresignedURL } from "@/lib/actions/posts";
 import { v4 as uuidv4 } from "uuid";
 import TextBox from "@/components/Input/TextBox";
 import FormButton from "@/components/Input/FormButton";
 
+type UploadError = {
+  title?: string;
+  file?: string;
+  description?: string;
+};
+
 export default function UploadForm() {
-  const [state, createPostAction, pending] = useActionState(createPost, null);
   const [previewUrl, setPreviewUrl] = useState(null); // File URL for preview
-  const [uploadedFileInfo, setUploadedFileInfo] = useState<any>(null); // Uploaded file list
+  const [uploadedFileInfo, setUploadedFileInfo] = useState<any>(null); // Uploaded file info
   const [uploadedFile, setUploadedFile] = useState<any>(null); // Uploaded file list
-  const [uploadError, setUploadError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [uploadError, setUploadError] = useState<UploadError>({});
 
   const handleChange = async ({ fileList, file }: any) => {
     // Handle preview generation for the latest file
@@ -45,31 +49,35 @@ export default function UploadForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const uuid = uuidv4();
+    setIsUploading(true);
+    setUploadError({});
 
-    if (!uploadedFile) {
-      setUploadError("Please include a video file.");
+    // Client Side Validation
+    const maxSize = 50 * 1024 * 1024; // 50MB limit
+    if (!uploadedFile || uploadedFile.size > maxSize) {
+      setUploadError({ file: "Error uploading file. Please include a MP4 file under 50 MB" });
+      setIsUploading(false);
       return;
     }
 
+    const uuid = uuidv4();
     const formData = new FormData(e.currentTarget);
     formData.append("fileName", uploadedFileInfo.name);
     formData.append("fileSize", uploadedFileInfo.size);
     formData.append("fileType", uploadedFileInfo.type);
     formData.append("fileId", uuid);
 
-    const maxSize = 50 * 1024 * 1024; // Example: 50MB limit
-    if (uploadedFile.size > maxSize) {
-      setUploadError("Maximum allowed file size is 50MB.");
-      return;
-    }
-
     try {
-      // Generate signed URL from server
-      const presignedUrl = await getPresignedURL(formData);
+      // Generate signed URL from server, validate
+      const presignedUrlResponse = await createPresignedURL(formData);
+      if (presignedUrlResponse.errors) {
+        setUploadError(presignedUrlResponse.errors);
+        setIsUploading(false);
+        return;
+      }
 
       // Directly uploads the file to S3 using presigned url
-      const uploadResponse = await fetch(presignedUrl, {
+      const uploadResponse = await fetch(presignedUrlResponse.url, {
         method: "PUT",
         body: uploadedFile,
         headers: {
@@ -77,16 +85,18 @@ export default function UploadForm() {
         },
       });
 
-      if(uploadResponse.ok){
-        console.log("Adding to DB")
-        // Creates the post in database
-        startTransition(() => createPostAction(formData));
+      if (!uploadResponse.ok) {
+        setIsUploading(false);
+        return;
       }
 
-
+      // Creates the post in database
+      const postResponse = await createPost(formData);
+      if (postResponse.success) setUploadMessage(postResponse.success);
     } catch (error) {
-      console.log(error);
-      setUploadError("Error uploading the file.");
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -116,18 +126,21 @@ export default function UploadForm() {
           </div>
           <div className="m-4 "></div>
           <div className="flex flex-col grow">
-            <TextInput name="title" error={state?.title}>
+            <TextInput name="title" error={uploadError?.title}>
               TITLE
             </TextInput>
             <TextBox
               required={false}
               name="description"
-              error={state?.description}
+              error={uploadError?.description}
             >
               DESCRIPTION
             </TextBox>
-            {uploadError && <p className="text-red-500">{uploadError}</p>}
-            <FormButton pending={pending}>Upload</FormButton>
+            {uploadError && (
+              <p className="text-red-500 text-center">{uploadError.file}</p>
+            )}
+            <FormButton pending={isUploading}>Upload</FormButton>
+            {uploadMessage && <p className="text-green-500 text-center">{uploadMessage}</p>}
           </div>
         </form>
       </div>

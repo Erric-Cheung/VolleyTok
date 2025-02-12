@@ -6,7 +6,7 @@ interface userProps {
 const FormButton =({ pending, children }: userProps) => {
   return (
     <button
-      className="border pt-2 pb-2 pr-4 pl-4 rounded"
+      className={`border pt-2 pb-2 pr-4 pl-4 rounded ${pending ? "opacity-60" : ""}`}
       type="submit"
       disabled={pending}
     >
