@@ -3,6 +3,7 @@ import { cache } from "react";
 import { auth0 } from "@/lib/auth0";
 import { sql } from "@vercel/postgres";
 
+// Gets current user from session
 export const getCurrentUser = cache(async () => {
   const session = await auth0.getSession();
 
@@ -21,19 +22,3 @@ export const getCurrentUser = cache(async () => {
   return null;
 });
 
-export const getUserPostsFromDB = async () => {
-  const session = await auth0.getSession();
-
-  // No currently authenticated user
-  if (!session) {
-    return;
-  }
-
-  const posts =
-    await sql`SELECT fild_id, uploader, description, title, likes, FROM posts WHERE user_id = ${session.user.sub}`;
-
-  if (posts.rowCount !== 0) {
-    return posts.rows;
-  }
-  return null;
-};
