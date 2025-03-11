@@ -8,3 +8,23 @@ export interface Post {
   timestamp: Date;
   likes: number;
 }
+
+export interface Comment {
+  comment: string;
+  commenter: string;
+  timestamp: Date;
+  timeAgo: string;
+  replies?: Comment[];
+  comment_id?: string;
+  likes?: number;
+}
+
+export interface PostError {
+  file?: string;
+  title?: string;
+  description?: string;
+  fileSize?: string;
+  fileType?: string;
+  authorized?: string;
+  authenticated?: string;
+}

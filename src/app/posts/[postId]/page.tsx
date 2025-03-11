@@ -2,7 +2,7 @@
 
 import PostInfo from "@/components/Post/Content/PostInfo";
 import PostVideo from "@/components/Post/Content/PostVideo";
-import { getIdPost } from "@/lib/data/post";
+import { getIdPost, getPostComments } from "@/lib/data/post";
 
 export default async function Post({
   params,
@@ -11,6 +11,7 @@ export default async function Post({
 }) {
   const postId = (await params).postId;
   const post = await getIdPost(postId);
+  const comments = await getPostComments(postId);
 
   // const post = {
   //   description: "Test Description",
@@ -22,6 +23,8 @@ export default async function Post({
   //   timestamp: new Date(),
   //   likes: 0,
   // };
+
+  console.log(comments);
 
   if (!post) {
     // redirect or display 404
@@ -36,8 +39,11 @@ export default async function Post({
             <PostVideo videoUrl={post.videoUrl}></PostVideo>
           </div>
           <PostInfo
+            postId={postId}
+            comments={comments}
             uploader={post.uploader}
             description={post.description}
+            timestamp={post.timestamp}
           ></PostInfo>
         </div>
       </main>

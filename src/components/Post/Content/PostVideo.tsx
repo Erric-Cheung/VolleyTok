@@ -19,4 +19,4 @@ const PostVideo = ({ videoUrl }: PostVideoProps) => {
   );
 };
 
-export default PostVideo;
+export default PostVideo; 

@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { auth0 } from "@/lib/auth0";
 import { sql } from "@vercel/postgres";
-import { Post } from "../types/types";
+import { Post, Comment } from "../types/types";
 
 // Get posts from user with username slug
 export const getUsernamePosts = async (slug: string) => {
@@ -56,7 +56,9 @@ export const getLatestPosts = async (page = 1): Promise<Post[]> => {
   return posts;
 };
 
+// Get post with the id
 export const getIdPost = async (id: string): Promise<Post | null> => {
+  console.log("----- FETCHING POST -----");
   const { rows, rowCount } = await sql<{
     file_id: string;
     uploader: string;
@@ -82,9 +84,37 @@ export const getIdPost = async (id: string): Promise<Post | null> => {
   return post;
 };
 
-// Get comments from post with id
-export const getPostComments = async (id: string) => {
-  return;
+// Get comments from postId
+export const getPostComments = async (
+  postId: string,
+  page = 1
+): Promise<Comment[]> => {
+  console.log("----- FETCHING COMMENTS -----");
+
+  const pageSize = 10; // Number of posts per page
+  const offset = (page - 1) * pageSize; // Calculate offset
+
+  const { rows } = await sql<{
+    comment: string;
+    created_at: string;
+    username: string;
+  }>`
+    SELECT comments.comment, comments.created_at, users.username 
+    FROM comments
+    JOIN users ON comments.commenter_id = users.user_id
+    WHERE post_id = ${postId}
+    ORDER BY created_at DESC
+    LIMIT ${pageSize} OFFSET ${offset}
+  `;
+
+  const comments: Comment[] = rows.map((row) => ({
+    commenter: row.username,
+    comment: row.comment,
+    timestamp: new Date(row.created_at),
+    timeAgo: timeAgo(row.created_at),
+  }));
+
+  return comments;
 };
 
 // Helper function to get time posted ago

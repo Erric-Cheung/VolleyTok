@@ -6,7 +6,7 @@ import { getLatestPosts, getUsernamePosts } from "@/lib/data/post";
 export default async function Posts() {
   // Fetch posts here
   const posts = await getLatestPosts();
-  console.log(posts);
+  // console.log(posts);
 
   // const posts = [
   //   {

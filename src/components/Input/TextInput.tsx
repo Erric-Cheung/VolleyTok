@@ -1,6 +1,6 @@
 interface userProps {
   required?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   name?: string;
   error?: string;
 }
@@ -14,6 +14,7 @@ const TextInput = ({ required, name, error, children }: userProps) => {
         type="text"
         required={required}
         name={name}
+        placeholder="Add a comment"
       ></input>
       {error && (
         <p className="text-red-500" aria-live="polite">
