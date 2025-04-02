@@ -2,7 +2,7 @@
 
 import PostInfo from "@/components/Post/Content/PostInfo";
 import PostVideo from "@/components/Post/Content/PostVideo";
-import PageModal from "@/components/UI/PageModal";
+import PageModal from "@/components/Modals/PageModal";
 import { getIdPost, getPostComments } from "@/lib/data/post";
 
 export default async function PostModal({
@@ -12,8 +12,8 @@ export default async function PostModal({
 }) {
   const postId = (await params).postId;
   const post = await getIdPost(postId);
-  const comments = await getPostComments(postId)
-
+  const comments = await getPostComments(postId);
+  
   if (!post) {
     // redirect or display 404
     return;

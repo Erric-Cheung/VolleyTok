@@ -26,7 +26,6 @@ const PostPreview = ({ post}: PostPreviewProps) => {
     router.push(`/posts/${post.file_id}`);
   };
 
-  // href for link
   return (
     <div className="mr-6">
       <Link href={`/posts/${post.file_id}`}>

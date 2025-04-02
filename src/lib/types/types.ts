@@ -28,3 +28,7 @@ export interface PostError {
   authorized?: string;
   authenticated?: string;
 }
+
+export interface UserError {
+  [key: string]: string;
+}

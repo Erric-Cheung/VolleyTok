@@ -1,12 +1,14 @@
 "use server";
 
-import CommentBox from "@/components/Input/CommentBox";
+import CommentBox from "@/components/Input/TextInput/CommentBox";
 import Text from "@/components/UI/Text";
 import TimeAgo from "@/components/UI/TimeAgo";
 import UserTag from "@/components/UI/UserTag";
 import { createComment } from "@/lib/actions/posts";
 import { auth0 } from "@/lib/auth0";
+import { getCurrentUser } from "@/lib/data/user";
 import { Comment } from "@/lib/types/types";
+import Link from "next/link";
 
 interface PostInfoProps {
   uploader: string;
@@ -24,6 +26,7 @@ const PostInfo = async ({
   timestamp,
 }: PostInfoProps) => {
   const session = await auth0.getSession();
+  const user = await getCurrentUser();
 
   return (
     <div className="border lg:flex flex-1 flex-col p-6 w-full h-full flex-1 overflow-auto">
@@ -44,13 +47,23 @@ const PostInfo = async ({
 
       <div className="border-b-2 border-black mb-4">
         <div className="mb-2 font-bold">{comments.length} Comments</div>
-        {session?.user ? (
+        {session && user ? (
           <CommentBox
             createComment={createComment}
             postId={postId}
           ></CommentBox>
+        ) : session && !user ? (
+          <Link href={`/account`}>
+            <div className="text-center mb-4 p-4 border cursor-pointer font-bold">
+              Set up your account to comment
+            </div>
+          </Link>
         ) : (
-          <div className="text-center mb-4 p-4 border cursor-pointer">Log in to comment</div>
+          <Link href={`/auth/login"`}>
+            <div className="text-center mb-4 p-4 border cursor-pointer font-bold">
+              Log in to comment
+            </div>
+          </Link>
         )}
       </div>
       <div className="">

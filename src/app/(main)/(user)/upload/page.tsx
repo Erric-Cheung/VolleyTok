@@ -1,12 +1,12 @@
 "use client";
 
-import TextInput from "@/components/Input/TextInput";
+import TextInput from "@/components/Input/TextInput/TextInput";
 import { Upload } from "antd";
 import { useState } from "react";
 import { createPost, createPresignedURL } from "@/lib/actions/posts";
 import { v4 as uuidv4 } from "uuid";
-import TextBox from "@/components/Input/TextBox";
-import FormButton from "@/components/Input/FormButton";
+import TextBox from "@/components/Input/TextInput/TextBox";
+import FormButton from "@/components/Input/Buttons/FormButton";
 
 type UploadError = {
   title?: string;

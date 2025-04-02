@@ -13,19 +13,6 @@ export default async function Post({
   const post = await getIdPost(postId);
   const comments = await getPostComments(postId);
 
-  // const post = {
-  //   description: "Test Description",
-  //   title: "Test Title",
-  //   uploader: "buzzy",
-  //   file_id: "/clip1.mp4",
-  //   videoUrl: "/clip1.mp4",
-  //   timeAgo: "35 minutes ago",
-  //   timestamp: new Date(),
-  //   likes: 0,
-  // };
-
-  console.log(comments);
-
   if (!post) {
     // redirect or display 404
     return;
@@ -33,7 +20,7 @@ export default async function Post({
 
   return (
     <div className="items-center justify-items-center min-h-screen font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center w-full overflow-auto ">
+      <div className="flex flex-col gap-8 row-start-2 items-center w-full overflow-auto ">
         <div className="flex flex-col w-max-full w-full pl-8 pr-8 max-w-[1920px]">
           <div className="flex max-h-[calc(100vh-120px)] aspect-[0.7/1] flex-col w-full h-full">
             <PostVideo videoUrl={post.videoUrl}></PostVideo>
@@ -46,7 +33,7 @@ export default async function Post({
             timestamp={post.timestamp}
           ></PostInfo>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

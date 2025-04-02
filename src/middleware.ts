@@ -22,10 +22,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
-  // If user doesn't have profile created
-  if (req.nextUrl.pathname.startsWith("/welcome")) {
+  const user = await getCurrentUser();
+
+  // User doesn't have profile created
+  if (session && !user && !path.startsWith("/welcome")) {
+    console.log("WELCOME REDIRECT");
+    return NextResponse.redirect(new URL("/welcome", req.nextUrl));
+  }
+
+  // User has profile created
+  if (path.startsWith("/welcome")) {
     console.log("WELCOME ROUTE");
-    const user = await getCurrentUser();
 
     if (user) {
       return NextResponse.redirect(new URL("/", req.nextUrl));

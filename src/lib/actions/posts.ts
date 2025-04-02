@@ -124,6 +124,13 @@ export const createComment = async (comment: string, postId: string) => {
   return { success: "Successfully created comment." };
 };
 
+export const likePost = async () => {
+  const session = await auth0.getSession();
+
+  if (!session) {
+  }
+};
+
 interface Errors {
   file?: string;
   title?: string;

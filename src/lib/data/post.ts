@@ -5,8 +5,10 @@ import { sql } from "@vercel/postgres";
 import { Post, Comment } from "../types/types";
 
 // Get posts from user with username slug
-export const getUsernamePosts = async (slug: string) => {
+export const getUsernamePosts = async (username: string) => {
   // No need for authentication unless private
+
+  console.log("------FETCHING USER POSTS------")
 
   const { rows } = await sql<{
     file_id: string;
@@ -15,7 +17,7 @@ export const getUsernamePosts = async (slug: string) => {
     description: string;
     likes: number;
     timestamp: string;
-  }>`SELECT file_id, uploader, description, title, likes, timestamp FROM posts WHERE uploader = ${slug}`;
+  }>`SELECT file_id, uploader, description, title, likes, timestamp FROM posts WHERE uploader = ${username}`;
 
   const posts: Post[] = rows.map((row) => ({
     ...row,
@@ -29,6 +31,7 @@ export const getUsernamePosts = async (slug: string) => {
 
 // Get latest 10 posts after offset
 export const getLatestPosts = async (page = 1): Promise<Post[]> => {
+  console.log("----- FETCHING POSTS -----");
   const pageSize = 10; // Number of posts per page
   const offset = (page - 1) * pageSize; // Calculate offset
 
