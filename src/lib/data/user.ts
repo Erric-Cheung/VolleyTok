@@ -5,6 +5,7 @@ import { sql } from "@vercel/postgres";
 
 // Gets current user from session
 export const getCurrentUser = cache(async () => {
+  console.log("----- GET USER -----");
   const session = await auth0.getSession();
 
   // No currently authenticated user
@@ -12,14 +13,18 @@ export const getCurrentUser = cache(async () => {
     return;
   }
 
-  const currentUser =
-    await sql`SELECT * FROM users WHERE user_id = ${session.user.sub}`;
+  try {
+    const currentUser =
+      await sql`SELECT * FROM users WHERE user_id = ${session.user.sub}`;
 
-  if (currentUser.rowCount !== 0) {
-    const { user_id, email, username } = currentUser.rows[0];
-    return { username, user_id };
+    if (currentUser.rowCount !== 0) {
+      const { user_id, email, username, bio } = currentUser.rows[0];
+      return { username, email, user_id, bio };
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
   }
-  return null;
 });
 
 // Get info from user with username
@@ -30,8 +35,8 @@ export const getUser = async (username: string) => {
     await sql`SELECT * FROM users WHERE username = ${username}`;
 
   if (rowCount !== 0) {
-    const { user_id, username } = rows[0];
-    return { username, user_id };
+    const { user_id, username, bio } = rows[0];
+    return { username, bio, user_id };
   }
 
   return null;

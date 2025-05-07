@@ -1,6 +1,7 @@
 "use server";
 import { auth0 } from "@/lib/auth0";
 import { sql } from "@vercel/postgres";
+
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { usernameSchema } from "../types/validation";
@@ -19,7 +20,6 @@ export const createUser = cache(async (formData: FormData) => {
   }
 
   const username = formData.get("username") as string;
-  console.log(username);
 
   // Validate username
   const validationResult = usernameSchema.safeParse({ username });
@@ -50,14 +50,95 @@ export const createUser = cache(async (formData: FormData) => {
   redirect("/");
 });
 
+export const updateUser = async (formData: FormData) => {
+  const errors: UserError = {};
+  try {
+    const session = await auth0.getSession();
+    const currentUser = await getCurrentUser();
+
+    // No currently authenticated user
+    if (!session || !currentUser) {
+      errors.authentication = "Not authenticated.";
+      return { errors: errors };
+    }
+
+    // Get input data
+    const username = formData.get("username") as string;
+    const bio = formData.get("bio") as string;
+
+    // Validate only inputted values
+    const validationInput: { username?: string; bio?: string } = {};
+    if (username) validationInput.username = username;
+    if (bio) validationInput.bio = bio;
+
+    // Validate username and bio
+    const validationResult = usernameSchema
+      .partial()
+      .safeParse(validationInput);
+    const errorResults = validationResult.error?.format();
+    if (errorResults?.username) {
+      errors.username = errorResults.username?._errors[0];
+    }
+
+    if (errorResults?.bio) {
+      errors.bio = errorResults.bio?._errors[0];
+    }
+
+    const client = await sql.connect();
+    // Check if inputted username already exists
+    const existingUser =
+      await client.sql`SELECT * FROM users WHERE username = ${username}`;
+
+    if (existingUser.rowCount !== 0) {
+      errors.username = "Username is taken.";
+    }
+
+    // Return any found errors
+    if (Object.keys(errors).length > 0) {
+      return { errors: errors };
+    }
+
+    // Update user with changes if they exist
+    const fields = [];
+    const values = [];
+
+    if (username) {
+      fields.push(`username = $${fields.length + 1}`);
+      values.push(username);
+    }
+    if (bio) {
+      fields.push(`bio = $${fields.length + 1}`);
+      values.push(bio);
+    }
+
+    if (fields.length > 0) {
+      const query = `
+        UPDATE users
+        SET ${fields.join(", ")}
+        WHERE user_id = $${fields.length + 1}
+      `;
+      values.push(currentUser.user_id); // final placeholder
+
+      await client.query(query, values);
+    }
+
+    return { success: "Successfully updated user." };
+  } catch (err) {
+    console.log("Failed to update user: " + err);
+    return {
+      err,
+    };
+  }
+};
+
 export const followUser = async (followId: string) => {
-  console.log("FOLLOW USER")
+  console.log("FOLLOW USER");
   const session = await auth0.getSession();
   const currentUser = await getCurrentUser();
 
   if (!session || !currentUser) {
     // redirect login
-    return {error: "Not authneticated"};
+    return { error: "Not authneticated" };
   }
 
   console.log(currentUser.user_id);
@@ -88,7 +169,7 @@ export const unfollowUser = async (unfollowId: string) => {
 
   if (!session || !currentUser) {
     // redirect login
-    return {error: "Not authneticated"};
+    return { error: "Not authneticated" };
   }
 
   try {
@@ -107,3 +188,7 @@ export const unfollowUser = async (unfollowId: string) => {
 
   return { success: true };
 };
+
+const updateUsername = async () => {};
+
+const updateBio = async () => {};

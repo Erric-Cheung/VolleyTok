@@ -8,7 +8,7 @@ import { Post, Comment } from "../types/types";
 export const getUsernamePosts = async (username: string) => {
   // No need for authentication unless private
 
-  console.log("------FETCHING USER POSTS------")
+  console.log("------ USER POSTS------");
 
   const { rows } = await sql<{
     file_id: string;
@@ -30,8 +30,8 @@ export const getUsernamePosts = async (username: string) => {
 };
 
 // Get latest 10 posts after offset
-export const getLatestPosts = async (page = 1): Promise<Post[]> => {
-  console.log("----- FETCHING POSTS -----");
+export const getLatestPosts = cache(async (page = 1): Promise<Post[]> => {
+  console.log("----- LATEST POSTS -----");
   const pageSize = 10; // Number of posts per page
   const offset = (page - 1) * pageSize; // Calculate offset
 
@@ -57,7 +57,7 @@ export const getLatestPosts = async (page = 1): Promise<Post[]> => {
   }));
 
   return posts;
-};
+});
 
 // Get post with the id
 export const getIdPost = async (id: string): Promise<Post | null> => {

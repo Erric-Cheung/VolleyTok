@@ -1,19 +1,19 @@
 "use server";
 
-import Button from "@/components/UI/Button";
 import FollowButton from "@/components/Input/Buttons/FollowButton";
 import PostList from "@/components/Post/PostList";
 import UserIcon from "@/components/UI/UserIcon";
-import { followUser, unfollowUser } from "@/lib/actions/user";
 import { auth0 } from "@/lib/auth0";
+import { notFound } from "next/navigation";
 import { getUsernamePosts } from "@/lib/data/post";
 import {
   checkIsFollowing,
+  getCurrentUser,
   getFollowerList,
   getFollowingList,
   getUser,
 } from "@/lib/data/user";
-import { notFound } from "next/navigation";
+import EditProfileButton from "@/components/Input/Buttons/EditProfileButton";
 
 export default async function Profile({
   params,
@@ -23,6 +23,7 @@ export default async function Profile({
   const session = await auth0.getSession();
   const usernameHandle = decodeURIComponent((await params).username);
   const username = usernameHandle.slice(1);
+  const currentUser = await getCurrentUser();
   const user = await getUser(username);
 
   // Enforce @ prefix
@@ -30,18 +31,24 @@ export default async function Profile({
     notFound();
   }
 
-  const posts = await getUsernamePosts(username);
-  const isProfileOwner = user.user_id === session?.user.sub;
-  let isFollowing;
+  let isFollowing = false;
+  let isProfileOwner = false;
 
-  if (!isProfileOwner && session) {
-    isFollowing = await checkIsFollowing(session.user.sub, user.user_id);
+  if (currentUser) {
+    isProfileOwner = user.username === currentUser.username;
+  }
+
+  if (!isProfileOwner && session && currentUser) {
+    isFollowing = await checkIsFollowing(currentUser.user_id, user.user_id);
   }
 
   const followersResult = await getFollowerList(username);
   const followingResult = await getFollowingList(username);
+  const posts = await getUsernamePosts(username);
 
-  console.log(followingResult);
+  const postRes = await fetch(`http://localhost:3000/api/posts?username=${username}`);
+  const data = await postRes.json();
+  console.log(data);
 
   return (
     <div className="flex flex-col h-full pt-4 pr-4 pl-4 ">
@@ -51,9 +58,7 @@ export default async function Profile({
           <div className="font-bold mb"> {user.username}</div>
           <div className="flex">
             {isProfileOwner ? (
-              <Button onClick={unfollowUser.bind(null, user.user_id)}>
-                Edit Profile
-              </Button>
+              <EditProfileButton />
             ) : (
               <FollowButton
                 userId={user.user_id}
@@ -76,7 +81,7 @@ export default async function Profile({
                 <span className="ml-1">Following</span>
               </div>
             </div>
-            <div className="mb-2">No bio yet.</div>
+            <div className="mb-2">{user.bio ? user.bio : "No bio yet."}</div>
           </div>
         </div>
       </div>
@@ -84,8 +89,8 @@ export default async function Profile({
       <div className="">
         <div className="flex">
           <div className="mb-2 border-b flex-1">Posts</div>
-          <div className="mb-2 border-b flex-1">Liked</div>
-          <div className="mb-2 border-b flex-1">Saved</div>
+          {/* <div className="mb-2 border-b flex-1">Liked</div>
+          <div className="mb-2 border-b flex-1">Saved</div> */}
         </div>
         <PostList posts={posts}></PostList>
       </div>

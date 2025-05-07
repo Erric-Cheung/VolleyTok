@@ -1,19 +1,14 @@
+// JUST NEEDS TO BE HOME BACKGROUND ?
 "use server";
 
 import PostList from "@/components/Post/PostList";
 import { getLatestPosts } from "@/lib/data/post";
 
-export default async function Home() {
+// Settings with home fallback page
+export default async function SettingsHome() {
   const posts = await getLatestPosts();
-  
-  // const postRes = await fetch(
-  //   `http://localhost:3000/api/posts?username=${"buzzy"}`,
-  //   {
-  //     cache: "force-cache",
-  //     next: { revalidate: 60 },
-  //   }
-  // );
-  // const data = await postRes.json();
+
+  console.log("FALLBACK SETTINGS")
 
   return (
     <div className="items-center justify-items-center min-h-screen font-[family-name:var(--font-geist-sans)] ">

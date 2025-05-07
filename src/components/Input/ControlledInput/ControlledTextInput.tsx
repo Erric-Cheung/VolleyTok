@@ -1,48 +1,42 @@
 "use client";
 
-import { useState } from "react";
-
-interface userProps {
+interface textInputProps {
   required?: boolean;
-  children?: React.ReactNode;
   name?: string;
   error?: string;
   placeholder?: string;
   value?: string;
+  label?: string;
+  onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const TextInput = ({
+const ControlledTextInput = ({
   required,
   name,
   error,
-  children,
+  label,
   placeholder,
   value,
-}: userProps) => {
-  const [textValue, setTextValue] = useState(value || "");
-
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTextValue(e.currentTarget.value);
-  };
-
+  onChangeHandler,
+}: textInputProps) => {
   return (
     <label
       className={`font-bold flex flex-col mb-4 ${error ? "text-red-500" : ""}`}
     >
-      {children}
+      {label}
       <input
-        className={`border p-2 rounded font-normal ${
+        className={`border p-2 rounded font-normal mb-1 ${
           error ? "border-red-500" : ""
         }`}
         type="text"
         required={required}
         name={name}
         placeholder={placeholder}
-        value={textValue}
+        value={value}
         onChange={onChangeHandler}
       ></input>
       {error && (
-        <p className="text-red-500" aria-live="polite">
+        <p className="text-red-500 font-ns text-xs" aria-live="polite">
           {error}
         </p>
       )}
@@ -50,4 +44,4 @@ const TextInput = ({
   );
 };
 
-export default TextInput;
+export default ControlledTextInput;
