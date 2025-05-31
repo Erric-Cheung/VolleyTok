@@ -3,6 +3,7 @@ import { cache } from "react";
 import { auth0 } from "@/lib/auth0";
 import { sql } from "@vercel/postgres";
 import { Post, Comment } from "../types/types";
+import { getCurrentUser } from "./user";
 
 // Get posts from user with username slug
 export const getUsernamePosts = async (username: string) => {
@@ -13,11 +14,12 @@ export const getUsernamePosts = async (username: string) => {
   const { rows } = await sql<{
     file_id: string;
     uploader: string;
+    uploader_id: string;
     title: string;
     description: string;
     likes: number;
     timestamp: string;
-  }>`SELECT file_id, uploader, description, title, likes, timestamp FROM posts WHERE uploader = ${username}`;
+  }>`SELECT file_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE uploader = ${username}`;
 
   const posts: Post[] = rows.map((row) => ({
     ...row,
@@ -38,12 +40,13 @@ export const getLatestPosts = cache(async (page = 1): Promise<Post[]> => {
   const { rows } = await sql<{
     file_id: string;
     uploader: string;
+    uploader_id: string;
     title: string;
     description: string;
     likes: number;
     timestamp: string;
   }>`
-    SELECT file_id, uploader, description, title, likes, timestamp 
+    SELECT file_id, uploader, uploader_id description, title, likes, timestamp 
     FROM posts
     ORDER BY timestamp DESC
     LIMIT ${pageSize} OFFSET ${offset}
@@ -65,11 +68,12 @@ export const getIdPost = async (id: string): Promise<Post | null> => {
   const { rows, rowCount } = await sql<{
     file_id: string;
     uploader: string;
+    uploader_id: string;
     title: string;
     description: string;
     likes: number;
     timestamp: string;
-  }>`SELECT file_id, uploader, description, title, likes, timestamp FROM posts WHERE file_id = ${id}`;
+  }>`SELECT file_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE file_id = ${id}`;
 
   console.log(id);
 
@@ -118,6 +122,70 @@ export const getPostComments = async (
   }));
 
   return comments;
+};
+
+// Get users who liked from postId
+export const getPostLikedUsers = async (postId: string) => {
+  console.log("----- FETCHING LIKES -----");
+
+  try {
+    const { rows, rowCount } = await sql`
+    SELECT likes.liked_at, users.username 
+    FROM likes
+    JOIN users ON likes.user_id = users.user_id
+    WHERE post_id = ${postId}
+  `;
+
+    const likedUsers = rows.map((row) => ({
+      username: row.username,
+      liked_at: new Date(row.created_at),
+      timeAgo: timeAgo(row.liked_at),
+    }));
+
+    return { likedUsers: likedUsers, likeCount: rowCount };
+  } catch (error) {
+    console.log(error);
+    return { error: error };
+  }
+};
+
+// Get post like info for current user
+export const getPostLikeInfo = async (postId: string) => {
+  console.log("----- FETCHING LIKES -----");
+  const user = await getCurrentUser();
+  try {
+    if (!user) {
+      // Query for total likes
+      const { rows } = await sql`
+        SELECT COUNT(*) AS like_count
+        FROM likes
+        WHERE post_id = ${postId};
+      `;
+      return {
+        likeCount: Number(rows[0].like_count),
+        userLiked: false,
+      };
+    }
+
+    // Query like total likes and user liked status
+    const { rows } = await sql`
+      SELECT 
+        COUNT(*) FILTER (WHERE user_id = ${user.user_id}) > 0 AS user_liked,
+        COUNT(*) AS like_count
+      FROM likes
+      WHERE post_id = ${postId};
+    `;
+
+    const { user_liked, like_count } = rows[0];
+
+    return {
+      likeCount: Number(like_count),
+      userLiked: user_liked,
+    };
+  } catch (error) {
+    console.log(error);
+    return { error: error };
+  }
 };
 
 // Helper function to get time posted ago

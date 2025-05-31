@@ -124,10 +124,70 @@ export const createComment = async (comment: string, postId: string) => {
   return { success: "Successfully created comment." };
 };
 
-export const likePost = async () => {
-  const session = await auth0.getSession();
+export const deletePost = async (postId: string) => {};
 
-  if (!session) {
+export const likePost = async (postId: string) => {
+  const user = await getCurrentUser();
+  console.log("LIKING POST");
+
+  let errors: Errors = {};
+  if (!user) {
+    // redirect to login
+    return;
+  }
+
+  try {
+    await sql`
+    INSERT INTO likes (post_id, user_id)
+    VALUES (${postId}, ${user.user_id})
+    ON CONFLICT (post_id, user_id) DO NOTHING;
+  `;
+
+    // Get like count
+    const { rows } = await sql`
+    SELECT COUNT(*) AS count FROM likes WHERE post_id = ${postId};
+  `;
+
+    const likeCount = Number(rows[0]?.count ?? 0);
+
+    return { success: true, likeCount: likeCount };
+  } catch (error) {
+    console.log("Failed to like post: " + error);
+    return {
+      error,
+    };
+  }
+};
+
+export const unlikePost = async (postId: string) => {
+  const user = await getCurrentUser();
+  console.log("LIKING POST");
+
+  let errors: Errors = {};
+  if (!user) {
+    // redirect to login
+    return;
+  }
+
+  try {
+    await sql`
+    DELETE FROM likes
+    WHERE post_id = ${postId} AND user_id = ${user.user_id};
+  `;
+
+    // Get like count
+    const { rows } = await sql`
+    SELECT COUNT(*) AS count FROM likes WHERE post_id = ${postId};
+  `;
+
+    const likeCount = Number(rows[0]?.count ?? 0);
+
+    return { success: true, likeCount: likeCount };
+  } catch (error) {
+    console.log("Failed to like post: " + error);
+    return {
+      error,
+    };
   }
 };
 

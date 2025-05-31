@@ -3,7 +3,12 @@
 import PostInfo from "@/components/Post/Content/PostInfo";
 import PostVideo from "@/components/Post/Content/PostVideo";
 import PageModal from "@/components/Modals/PageModal";
-import { getIdPost, getPostComments } from "@/lib/data/post";
+import {
+  getIdPost,
+  getPostComments,
+  getPostLikedUsers,
+  getPostLikeInfo,
+} from "@/lib/data/post";
 
 export default async function PostModal({
   params,
@@ -13,7 +18,10 @@ export default async function PostModal({
   const postId = (await params).postId;
   const post = await getIdPost(postId);
   const comments = await getPostComments(postId);
-  
+  const likeInfo = await getPostLikeInfo(postId);
+
+  console.log(likeInfo);
+
   if (!post) {
     // redirect or display 404
     return;
@@ -29,9 +37,12 @@ export default async function PostModal({
           <PostInfo
             postId={postId}
             uploader={post.uploader}
+            uploader_id={post.uploader_id}
             description={post.description}
             timestamp={post.timestamp}
             comments={comments}
+            likeCount={likeInfo.likeCount ?? 0}
+            userLiked={likeInfo.userLiked}
           ></PostInfo>
         </div>
       </div>

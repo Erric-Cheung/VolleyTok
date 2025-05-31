@@ -1,12 +1,12 @@
 export default function Layout({
   children,
   postModal,
-  modals
-}: Readonly<{
+  modals,
+}: {
   children: React.ReactNode;
   postModal: React.ReactNode;
   modals: React.ReactNode;
-}>) {
+}) {
   return (
     <>
       {children}

@@ -45,12 +45,14 @@ const Sidebar = ({ user }: userProps) => {
         } `}
       >
         <div className={`md:w-full p-2 ${menuIsOpen ? "w-full" : ""} `}>
-          <SidebarHeader
-            title="VolleyTok"
-            href="/"
-            icon={<FaVolleyballBall size={24} />}
-            shorten={menuIsOpen}
-          />
+          <div className="flex">
+            <SidebarHeader
+              title="VolleyTok"
+              href="/"
+              icon={<FaVolleyballBall size={24} />}
+              shorten={menuIsOpen}
+            />
+          </div>
           <div className="flex flex-col gap-2">
             {/* Global Links */}
             <SidebarLink
