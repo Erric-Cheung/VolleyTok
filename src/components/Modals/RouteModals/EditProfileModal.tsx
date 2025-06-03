@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import TextBox from "../Input/TextInput/TextBox";
-import ControlledTextInput from "../Input/ControlledInput/ControlledTextInput";
+import TextBox from "../../Input/TextInput/TextBox";
+import ControlledTextInput from "../../Input/ControlledInput/ControlledTextInput";
 import { updateUser } from "@/lib/actions/user";
-import BackButton from "../Input/Buttons/BackButton";
+import BackButton from "../../Input/Buttons/BackButton";
 import { useNavigate } from "@/lib/utils/useNavigate";
-import Button from "../UI/Button";
+import Button from "../../UI/Button";
 import { UserError } from "@/lib/types/types";
-import ControlledTextBox from "../Input/ControlledInput/ControlledTextBox";
+import ControlledTextBox from "../../Input/ControlledInput/ControlledTextBox";
 
 const EditProfileModal = ({
   username,

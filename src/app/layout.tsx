@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import HistoryTracker from "@/components/Utility/HistoryTracker";
+import { ModalProvider } from "@/components/Utility/ModalContext";
+import ModalRoot from "@/components/Modals/RootModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,10 +25,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
-      <body className="">{children}</body>
+      <body className="">
+        <ModalProvider>
+          {children}
+          <ModalRoot></ModalRoot>
+        </ModalProvider>
+        <div id="modal" />
+      </body>
       <HistoryTracker></HistoryTracker>
     </html>
   );

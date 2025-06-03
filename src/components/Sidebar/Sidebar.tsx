@@ -27,7 +27,6 @@ type userProps = {
 
 const Sidebar = ({ user }: userProps) => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  console.log("SIDEBAR RERENDER");
 
   const toggleMenuHandler = () => {
     setMenuIsOpen(!menuIsOpen);

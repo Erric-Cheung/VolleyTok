@@ -1,6 +1,6 @@
 "use server";
 
-import EditProfileModal from "@/components/Modals/EditProfileModal";
+import EditProfileModal from "@/components/Modals/RouteModals/EditProfileModal";
 import { getCurrentUser } from "@/lib/data/user";
 
 // Modal for intercepted settings route.

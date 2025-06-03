@@ -6,7 +6,7 @@ import Sidebar from "../Sidebar/Sidebar";
 
 const MainLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getCurrentUser();
-  console.log("LAYOUT RERENDER");
+  console.log("MAIN LAYOUT RERENDER");
   return (
     <main className="flex flex-grow min-h-screen">
       <div className="flex flex-1">

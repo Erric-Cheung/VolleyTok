@@ -2,7 +2,7 @@
 
 import PostInfo from "@/components/Post/Content/PostInfo";
 import PostVideo from "@/components/Post/Content/PostVideo";
-import PageModal from "@/components/Modals/PageModal";
+import PageModal from "@/components/Modals/RouteModals/PageModal";
 import {
   getIdPost,
   getPostComments,

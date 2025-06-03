@@ -1,6 +1,10 @@
 "use server";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { fromEnv } from "@aws-sdk/credential-providers"; // ES6 import
 import { sql } from "@vercel/postgres";
@@ -124,7 +128,46 @@ export const createComment = async (comment: string, postId: string) => {
   return { success: "Successfully created comment." };
 };
 
-export const deletePost = async (postId: string) => {};
+export const deletePost = async (postId: string) => {
+  console.log("--- DELETE POST ---");
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: "Not authorized." };
+  }
+
+  try {
+    const { rows, rowCount } =
+      await sql`SELECT uploader_id FROM posts WHERE post_id = ${postId}`;
+
+    const uploaderId = rows[0].uploader_id;
+
+    if (rowCount === 0) {
+      return { error: "Post does not exist." };
+    }
+    if (uploaderId !== user?.user_id) {
+      return { error: "Not authorized." };
+    }
+
+    await sql`DELETE FROM posts WHERE post_id = ${postId}`;
+
+    const client = new S3Client({
+      region: process.env.S3_REGION,
+      credentials: fromEnv(),
+    });
+
+    const input = { Bucket: process.env.S3_BUCKET, Key: postId };
+    const command = new DeleteObjectCommand(input);
+    const response = await client.send(command);
+
+    console.log("Success. Object deleted.", response);
+    return { success: "Post successfully deleted." };
+  } catch (error) {
+    console.log("Something went wrong: " + error);
+    return {
+      error,
+    };
+  }
+};
 
 export const likePost = async (postId: string) => {
   const user = await getCurrentUser();
