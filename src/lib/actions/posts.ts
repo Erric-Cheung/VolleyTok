@@ -57,7 +57,7 @@ export const createPresignedURL = async (formData: FormData) => {
     ContentType: fileType,
   });
 
-  const url = await getSignedUrl(client, command, { expiresIn: 120 });
+  const url = await getSignedUrl(client, command, { expiresIn: 600  });
 
   return { url: url, success: "Successfully created presigned URL" };
 };
@@ -91,7 +91,7 @@ export const createPost = async (formData: FormData) => {
   // Create post
   await sql`
   INSERT INTO posts (post_id, file_id, uploader_id, uploader, description, title)
-  VALUES (${postId} ${fileId}, ${userId}, ${username}, ${postDescription}, ${postTitle})
+  VALUES (${postId}, ${fileId}, ${userId}, ${username}, ${postDescription}, ${postTitle})
     `;
 
   // redirect

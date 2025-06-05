@@ -5,19 +5,13 @@ import Text from "@/components/UI/Text";
 import TimeAgo from "@/components/UI/TimeAgo";
 import UserTag from "@/components/UI/UserTag";
 import { auth0 } from "@/lib/auth0";
-import {
-  createComment,
-  likePost,
-  unlikePost,
-  deletePost,
-} from "@/lib/actions/posts";
+import { createComment } from "@/lib/actions/posts";
 import { getCurrentUser } from "@/lib/data/user";
 import { Comment } from "@/lib/types/types";
 import Link from "next/link";
-import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
-import IconButton from "@/components/UI/IconButton";
-import LikeButton from "@/components/Post/Content/LikeButton";
-import DeleteButton from "./DeleteButton";
+import LikeButton from "@/components/Post/Content/Buttons/LikeButton";
+import DeleteButton from "./Buttons/DeleteButton";
+import ShareButton from "./Buttons/ShareButton";
 
 interface PostInfoProps {
   uploader: string;
@@ -64,7 +58,10 @@ const PostInfo = async ({
               userLiked={userLiked}
             ></LikeButton>
           </div>
-          {isPostOwner && <DeleteButton postId={postId} />}
+          <div className="flex gap-2">
+            <ShareButton postId={postId} />
+            {isPostOwner && <DeleteButton postId={postId} />}
+          </div>
         </div>
       </div>
       {/* Comment Section */}

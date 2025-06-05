@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useModal } from "../Utility/ModalContext";
 import ConfirmModal from "./ConfirmModal";
 import ClientOnlyPortal from "./ClientOnlyPortal";
+import MessageModal from "./MessageModal";
 
 export default function ModalRoot() {
   const { isOpen, closeModal, type, props } = useModal();
@@ -23,7 +24,16 @@ export default function ModalRoot() {
         />
       );
       break;
-
+    case "message":
+      ModalComponent = (
+        <MessageModal
+          message={props.message}
+          type={props.type}
+          onClose={closeModal}
+        />
+      );
+      break;
+      
     default:
       ModalComponent = null;
   }

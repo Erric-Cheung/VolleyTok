@@ -7,12 +7,15 @@ import { createPost, createPresignedURL } from "@/lib/actions/posts";
 import { v4 as uuidv4 } from "uuid";
 import TextBox from "@/components/Input/TextInput/TextBox";
 import FormButton from "@/components/Input/Buttons/FormButton";
+import { useNavigate } from "@/lib/utils/useNavigate";
 
 type UploadError = {
   title?: string;
   file?: string;
   description?: string;
 };
+
+const ALLOWED_TYPES = ["video/mp4"];
 
 export default function UploadForm() {
   const [previewUrl, setPreviewUrl] = useState(null); // File URL for preview
@@ -21,6 +24,8 @@ export default function UploadForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState<UploadError>({});
+
+  const { navigate } = useNavigate();
 
   const handleChange = async ({ fileList, file }: any) => {
     // Handle preview generation for the latest file
@@ -47,7 +52,7 @@ export default function UploadForm() {
     console.log(fileList);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
     setIsUploading(true);
     setUploadError({});
@@ -55,7 +60,9 @@ export default function UploadForm() {
     // Client Side Validation
     const maxSize = 50 * 1024 * 1024; // 50MB limit
     if (!uploadedFile || uploadedFile.size > maxSize) {
-      setUploadError({ file: "Error uploading file. Please include a MP4 file under 50 MB" });
+      setUploadError({
+        file: "Error uploading file. Please include a MP4 file under 50 MB",
+      });
       setIsUploading(false);
       return;
     }
@@ -92,7 +99,10 @@ export default function UploadForm() {
 
       // Creates the post in database
       const postResponse = await createPost(formData);
-      if (postResponse.success) setUploadMessage(postResponse.success);
+      if (postResponse.success) {
+        setUploadMessage(postResponse.success);
+        navigate(`/posts/${uuid}`);
+      }
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
@@ -115,8 +125,17 @@ export default function UploadForm() {
             )}
             <Upload.Dragger
               name="file"
-              beforeUpload={() => false}
               accept=".mp4"
+              beforeUpload={(file) => {
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                  setUploadError({
+                    file: "File format not supported.",
+                  });
+                  return Upload.LIST_IGNORE;
+                }
+
+                return false;
+              }}
               maxCount={1}
               className="flex flex-col justify-center m-16 items-stretch"
               onChange={handleChange}
@@ -140,7 +159,9 @@ export default function UploadForm() {
               <p className="text-red-500 text-center">{uploadError.file}</p>
             )}
             <FormButton pending={isUploading}>Upload</FormButton>
-            {uploadMessage && <p className="text-green-500 text-center">{uploadMessage}</p>}
+            {uploadMessage && (
+              <p className="text-green-500 text-center">{uploadMessage}</p>
+            )}
           </div>
         </form>
       </div>

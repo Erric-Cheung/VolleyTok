@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type ModalType = "confirm" | "custom" | "info"; // Extend as needed
+type ModalType = "confirm" | "message" | "error"; 
 
 type ModalContextType = {
   openModal: (type: ModalType, props?: Record<string, any>) => void;
