@@ -92,3 +92,18 @@ export const getFollowingList = async (username: string) => {
 
   return { followingList: rows, followingCount: rowCount };
 };
+
+export const getActivityNotifications = async (userId: string) => {
+  const { rows } = await sql`
+    SELECT 
+      a.*, 
+      u.username AS actor_username
+    FROM activities a
+    JOIN users u ON a.actor_id = u.user_id
+    WHERE a.target_id = ${userId}
+    ORDER BY a.created_at DESC
+    LIMIT 20
+    `;
+
+  return rows;
+};

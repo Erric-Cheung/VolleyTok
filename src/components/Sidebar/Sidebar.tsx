@@ -11,10 +11,9 @@ import {
 } from "react-icons/go";
 import SidebarLink from "./SidebarLink";
 import SidebarHeader from "./SidebarHeader";
-import { useState } from "react";
-import MenuHeader from "./MenuHeader";
-import MenuLink from "./MenuLink";
-import BackButton from "../Input/Buttons/BackButton";
+import { useEffect, useState } from "react";
+import RootMenu from "./Menu/RootMenu";
+import { usePathname } from "next/navigation";
 
 type userProps = {
   user?: {
@@ -27,116 +26,120 @@ type userProps = {
 
 const Sidebar = ({ user }: userProps) => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [menu, setMenu] = useState<"none" | "Activity" | "More">("none");
+  const pathname = usePathname();
 
-  const toggleMenuHandler = () => {
-    setMenuIsOpen(!menuIsOpen);
+  const toggleMenuHandler = (menuType: "Activity" | "More") => {
+    if (menuIsOpen && menu === menuType) {
+      setMenu("none");
+      setMenuIsOpen(false);
+    } else {
+      setMenu(menuType);
+      setMenuIsOpen(true);
+    }
   };
-
   const closeMenuHandler = () => {
+    setMenu("none");
     setMenuIsOpen(false);
   };
 
-  return (
-    <div className="flex ">
-      <div
-        className={`flex flex-col border-r items-center ${
-          menuIsOpen ? "" : "md:w-60"
-        } `}
-      >
-        <div className={`md:w-full p-2 ${menuIsOpen ? "w-full" : ""} `}>
-          <div className="flex">
-            <SidebarHeader
-              title="VolleyTok"
-              href="/"
-              icon={<FaVolleyballBall size={24} />}
-              shorten={menuIsOpen}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            {/* Global Links */}
-            <SidebarLink
-              title="Home"
-              href="/"
-              icon={<GoHome size={24} />}
-              shorten={menuIsOpen}
-            />
-            <SidebarLink
-              title="Explore"
-              href="/posts"
-              icon={<GoSearch size={24} />}
-              shorten={menuIsOpen}
-            />
-            {/* User Links */}
-            {user ? (
-              <>
-                <SidebarLink
-                  title="Profile"
-                  href={`/@${user?.username}`}
-                  icon={<GoPerson size={24} />}
-                  shorten={menuIsOpen}
-                />
-                <SidebarLink
-                  title="Activity"
-                  href={`/activity`}
-                  icon={<GoInbox size={24} />}
-                  shorten={menuIsOpen}
-                />
-                <SidebarLink
-                  title="Upload"
-                  href="/upload"
-                  icon={<GoMoveToTop size={24} />}
-                  shorten={menuIsOpen}
-                />
-                <SidebarLink
-                  title="More"
-                  icon={<GoKebabHorizontal size={24} />}
-                  onClick={toggleMenuHandler}
-                  shorten={menuIsOpen}
-                />
-              </>
-            ) : (
-              <SidebarLink title="Log In" href="/auth/login" external={true} />
-            )}
-          </div>
-        </div>
-      </div>
-      {/* Menu */}
+  // Close menu on link change
+  useEffect(() => {
+    closeMenuHandler();
+  }, [pathname]);
 
-      <div
-        className={`relative w-[320px] p-2 border-r transition-all transition-discrete duration-300 ease-in-out ${
-          menuIsOpen
-            ? "opacity-100 translate-x-0 pointer-events-auto"
-            : "opacity-0 -translate-x-full pointer-events-none"
-        } `}
-        style={{
-          display: menuIsOpen ? "block" : "none",
-          transitionBehavior: "allow-discrete",
-        }}
-      >
-        <MenuHeader></MenuHeader>
-        <div className="flex flex-col gap-1">
-          <MenuLink title="Settings" href="/settings"></MenuLink>
-          <MenuLink
-            title="Log out"
-            href="/auth/logout"
-            external={true}
-          ></MenuLink>
-          {/* <MenuLink
-            title="Dark mode"
-            href="/"
-          ></MenuLink> */}
+  return (
+    <>
+      <div className="flex relative bg-white">
+        <div className={`flex flex-col ${menuIsOpen ? "md:w-60" : "md:w-60"} `}>
+          <div
+            className={`p-2 z-50 ${
+              menuIsOpen ? "md:w-fit" : ""
+            } bg-white h-full`}
+          >
+            <div className="flex ">
+              <SidebarHeader
+                title="VolleyTok"
+                href="/"
+                icon={<FaVolleyballBall size={24} />}
+                shorten={menuIsOpen}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              {/* Global Links */}
+              <SidebarLink
+                title="Home"
+                href="/"
+                icon={<GoHome size={24} />}
+                shorten={menuIsOpen}
+                isActive={!menuIsOpen && pathname === "/"}
+              />
+              <SidebarLink
+                title="Explore"
+                href="/posts"
+                icon={<GoSearch size={24} />}
+                shorten={menuIsOpen}
+                isActive={!menuIsOpen && pathname === "/posts"}
+              />
+              {/* User Links */}
+              {user ? (
+                <>
+                  <SidebarLink
+                    title="Activity"
+                    icon={<GoInbox size={24} />}
+                    onClick={() => {
+                      toggleMenuHandler("Activity");
+                    }}
+                    shorten={menuIsOpen}
+                    isActive={menuIsOpen && menu === "Activity"}
+                  />
+                  <SidebarLink
+                    title="Upload"
+                    href="/upload"
+                    icon={<GoMoveToTop size={24} />}
+                    shorten={menuIsOpen}
+                    isActive={!menuIsOpen && pathname === "/upload"}
+                  />
+                  <SidebarLink
+                    title="Profile"
+                    href={`/@${user?.username}`}
+                    icon={<GoPerson size={24} />}
+                    shorten={menuIsOpen}
+                    isActive={!menuIsOpen && pathname === `/@${user?.username}`}
+                  />
+                  <SidebarLink
+                    title="More"
+                    icon={<GoKebabHorizontal size={24} />}
+                    onClick={() => {
+                      toggleMenuHandler("More");
+                    }}
+                    shorten={menuIsOpen}
+                    isActive={menuIsOpen && menu === "More"}
+                  />
+                </>
+              ) : (
+                <SidebarLink
+                  title="Log In"
+                  href="/auth/login"
+                  external={true}
+                />
+              )}
+            </div>
+          </div>
         </div>
-        <div className="absolute top-6 right-4">
-          <BackButton onClick={closeMenuHandler} />
-        </div>
+        <RootMenu
+          menu={menu}
+          menuIsOpen={menuIsOpen}
+          closeMenu={closeMenuHandler}
+        ></RootMenu>
       </div>
-      {/* {menuIsOpen && (
+      {menuIsOpen && (
         <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-20"
           onClick={closeMenuHandler}
-          className="fixed opacity-0 w-screen h-screen z-1 left-[376px]"
-        ></div>
-      )} */}
-    </div>
+        />
+      )}
+    </>
   );
 };
 

@@ -13,13 +13,14 @@ export const getUsernamePosts = async (username: string) => {
 
   const { rows } = await sql<{
     file_id: string;
+    post_id: string;
     uploader: string;
     uploader_id: string;
     title: string;
     description: string;
     likes: number;
     timestamp: string;
-  }>`SELECT file_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE uploader = ${username}`;
+  }>`SELECT file_id, post_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE uploader = ${username}`;
 
   const posts: Post[] = rows.map((row) => ({
     ...row,
@@ -39,6 +40,7 @@ export const getLatestPosts = cache(async (page = 1): Promise<Post[]> => {
 
   const { rows } = await sql<{
     file_id: string;
+    post_id: string;
     uploader: string;
     uploader_id: string;
     title: string;
@@ -46,7 +48,7 @@ export const getLatestPosts = cache(async (page = 1): Promise<Post[]> => {
     likes: number;
     timestamp: string;
   }>`
-    SELECT file_id, uploader, uploader_id description, title, likes, timestamp 
+    SELECT file_id, post_id, uploader, uploader_id description, title, likes, timestamp 
     FROM posts
     ORDER BY timestamp DESC
     LIMIT ${pageSize} OFFSET ${offset}
@@ -67,13 +69,14 @@ export const getIdPost = async (id: string): Promise<Post | null> => {
   console.log("----- FETCHING POST -----");
   const { rows, rowCount } = await sql<{
     file_id: string;
+    post_id: string;
     uploader: string;
     uploader_id: string;
     title: string;
     description: string;
     likes: number;
     timestamp: string;
-  }>`SELECT file_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE file_id = ${id}`;
+  }>`SELECT file_id, post_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE post_id = ${id}`;
 
   console.log(id);
 

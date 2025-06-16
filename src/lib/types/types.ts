@@ -3,6 +3,7 @@ export interface Post {
   description: string;
   uploader: string;
   uploader_id: string;
+  post_id: string;
   file_id: string;
   videoUrl: string;
   timeAgo: string;

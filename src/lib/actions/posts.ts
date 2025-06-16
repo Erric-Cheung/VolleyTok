@@ -57,7 +57,7 @@ export const createPresignedURL = async (formData: FormData) => {
     ContentType: fileType,
   });
 
-  const url = await getSignedUrl(client, command, { expiresIn: 600  });
+  const url = await getSignedUrl(client, command, { expiresIn: 600 });
 
   return { url: url, success: "Successfully created presigned URL" };
 };
@@ -100,32 +100,45 @@ export const createPost = async (formData: FormData) => {
 };
 
 export const createComment = async (comment: string, postId: string) => {
-  const session = await auth0.getSession();
+  try {
+    const user = await getCurrentUser();
 
-  // Redirect to login
-  if (!session)
-    return {
-      // redirect to login
-      message: "",
-    };
+    // Redirect to login
+    if (!user)
+      return {
+        // redirect to login
+        message: "",
+      };
 
-  let errors: Errors = {};
+    let errors: Errors = {};
 
-  if (!comment.trim()) errors.comment = "Please add a comment";
+    if (!comment.trim()) errors.comment = "Please add a comment";
 
-  if (Object.keys(errors).length) {
-    return { errors };
-  }
+    if (Object.keys(errors).length) {
+      return { errors };
+    }
 
-  const userId = session?.user.sub;
-  const commentId = uuidv4();
+    const commentId = uuidv4();
 
-  await sql`
-  INSERT INTO comments (comment_id, commenter_id, post_id, comment, created_at)
-  VALUES (${commentId}, ${userId}, ${postId}, ${comment}, NOW())
+    await sql`
+    INSERT INTO comments (comment_id, commenter_id, post_id, comment, created_at)
+    VALUES (${commentId}, ${user.user_id}, ${postId}, ${comment}, NOW())
     `;
 
-  return { success: "Successfully created comment." };
+    // Add to activities table
+    await sql`
+    INSERT INTO activities (type, actor_id, target_id, post_id)
+    SELECT 'comment', ${user.user_id}, posts.uploader_id, ${postId}
+    FROM posts WHERE post_id = ${postId};
+    `;
+
+    return { success: "Successfully created comment." };
+  } catch (error) {
+    console.log("Failed to comment " + error);
+    return {
+      error,
+    };
+  }
 };
 
 export const deletePost = async (postId: string) => {
@@ -184,12 +197,19 @@ export const likePost = async (postId: string) => {
     INSERT INTO likes (post_id, user_id)
     VALUES (${postId}, ${user.user_id})
     ON CONFLICT (post_id, user_id) DO NOTHING;
-  `;
+    `;
+
+    // Add to activities table
+    await sql`
+    INSERT INTO activities (type, actor_id, target_id, post_id)
+    SELECT 'like', ${user.user_id}, posts.uploader_id, ${postId}
+    FROM posts WHERE post_id = ${postId};
+    `;
 
     // Get like count
     const { rows } = await sql`
     SELECT COUNT(*) AS count FROM likes WHERE post_id = ${postId};
-  `;
+    `;
 
     const likeCount = Number(rows[0]?.count ?? 0);
 

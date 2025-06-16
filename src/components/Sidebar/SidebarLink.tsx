@@ -8,8 +8,9 @@ interface sidebarLinkProps {
   title: string;
   icon?: ReactElement;
   external?: boolean;
-  shorten?: boolean;
   href?: string;
+  shorten?: boolean;
+  isActive?: boolean;
   onClick?: () => void;
 }
 
@@ -19,14 +20,12 @@ const SidebarLink = ({
   icon,
   external,
   shorten,
+  isActive,
   onClick,
 }: sidebarLinkProps) => {
-  const pathname = usePathname();
-  const isActive = pathname === href;
-
   const content = (
     <div
-      className={` b order hover:bg-gray-300 rounded text-xs cursor-pointer${
+      className={`b order hover:bg-gray-300 rounded text-xs cursor-pointer ${
         isActive ? "bg-gray-300 text-black" : ""
       }`}
     >
@@ -57,22 +56,5 @@ const SidebarLink = ({
 
   return <div onClick={onClick}>{content}</div>;
 };
-// return (
-//   <Link href={href} prefetch={false}>
-//     <div
-//       className={`p-1 b order hover:bg-gray-300 rounded text-xs ${
-//         isActive ? "bg-gray-300 text-black" : ""
-//       }`}
-//     >
-//       <div className="flex items-center gap-1">
-//         <div className="flex w-[32px] h-[32px] items-center justify-center">
-//           {icon}
-//         </div>
-//         <div className="font-bold">{title}</div>
-//       </div>
-//     </div>
-//   </Link>
-// );
-// };
 
 export default SidebarLink;

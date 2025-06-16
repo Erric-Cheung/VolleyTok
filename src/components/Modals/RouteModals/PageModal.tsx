@@ -32,7 +32,7 @@ const PageModal = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-[99]">
       <div className="flex bg-white shadow-lg w-full h-full">
         <div className="absolute top-[20px] left-[20px] text-white z-[1]">
           <button

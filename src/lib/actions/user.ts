@@ -4,9 +4,9 @@ import { sql } from "@vercel/postgres";
 
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { usernameSchema } from "../types/validation";
+import { userSchema } from "../types/validation";
 import { UserError } from "../types/types";
-import { getCurrentUser } from "../data/user";
+import { getCurrentUser, getUserById } from "../data/user";
 
 // Creaters user in /welcome
 export const createUser = cache(async (formData: FormData) => {
@@ -22,7 +22,7 @@ export const createUser = cache(async (formData: FormData) => {
   const username = formData.get("username") as string;
 
   // Validate username
-  const validationResult = usernameSchema.safeParse({ username });
+  const validationResult = userSchema.safeParse({ username });
   const errorResults = validationResult.error?.format();
   if (errorResults?.username) {
     errors.username = errorResults.username?._errors[0];
@@ -72,9 +72,7 @@ export const updateUser = async (formData: FormData) => {
     if (bio) validationInput.bio = bio;
 
     // Validate username and bio
-    const validationResult = usernameSchema
-      .partial()
-      .safeParse(validationInput);
+    const validationResult = userSchema.partial().safeParse(validationInput);
     const errorResults = validationResult.error?.format();
     if (errorResults?.username) {
       errors.username = errorResults.username?._errors[0];
@@ -141,8 +139,11 @@ export const followUser = async (followId: string) => {
     return { error: "Not authneticated" };
   }
 
-  console.log(currentUser.user_id);
-  console.log(followId);
+  const followUser = await getUserById(followId);
+
+  if (!followUser) {
+    return { error: "User does not exist." };
+  }
 
   if (currentUser?.user_id === followId) {
     return { error: "Cannot follow yourself." };
@@ -154,6 +155,12 @@ export const followUser = async (followId: string) => {
     VALUES (${currentUser?.user_id}, ${followId})
     ON CONFLICT (follower_id, following_id) DO NOTHING;
     `;
+
+    await sql`
+    INSERT INTO activities (type, actor_id, target_id, post_id)
+    VALUES ('follow', ${currentUser.user_id}, ${followId}, NULL);
+    `;
+
   } catch (error) {
     console.log("Error following user");
     return { error: "Failed to follow user." };
@@ -188,6 +195,14 @@ export const unfollowUser = async (unfollowId: string) => {
 
   return { success: true };
 };
+
+export const clearActivity = async () => {
+  
+}
+
+export const deleteActivityById = async () => {
+
+}
 
 const updateUsername = async () => {};
 

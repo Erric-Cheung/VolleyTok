@@ -10,8 +10,8 @@ interface menuLinkProps {
 
 const MenuLink = ({ title, href, external }: menuLinkProps) => {
   const content = (
-    <div className={`flex h-[40px] b order hover:bg-gray-300 rounded`}>
-      <div className="flex items-center gap-1 mx-2">
+    <div className={`flex h-[40px] b order hover:bg-gray-300 rounded mx-2`}>
+      <div className="flex items-center gap-1 p-2">
         <div className="font-bold md:flex">{title}</div>
       </div>
     </div>

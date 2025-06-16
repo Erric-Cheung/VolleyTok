@@ -23,12 +23,12 @@ const PostPreview = ({ post}: PostPreviewProps) => {
 
   const onClickHandler = () => {
     // intercepting route
-    router.push(`/posts/${post.file_id}`);
+    router.push(`/posts/${post.post_id}`);
   };
 
   return (
     <div className="mr-6">
-      <Link href={`/posts/${post.file_id}`}>
+      <Link href={`/posts/${post.post_id}`}>
         <div className="relative w-full overflow-hidden cursor-pointer">
           <div className="relative pt-[133.333%] w-full overflow-hidden">
             <div className="">

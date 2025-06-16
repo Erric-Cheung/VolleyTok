@@ -2,7 +2,7 @@
 
 import { createUser } from "@/lib/actions/user";
 import { UserError } from "@/lib/types/types";
-import { usernameSchema } from "@/lib/types/validation";
+import { userSchema } from "@/lib/types/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,10 @@ export default function WelcomePage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(usernameSchema) });
+  } = useForm({
+    resolver: zodResolver(userSchema),
+    defaultValues: { bio: "" },
+  });
 
   const onSubmit = async (data: any) => {
     setServerErrors({});
