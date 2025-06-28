@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { sql } from "@vercel/postgres";
 import { createActivitiesTable } from "@/lib/db/create-tables";
 
 export async function GET() {

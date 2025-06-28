@@ -1,15 +1,21 @@
 "use client";
 
+import { ConfirmModalProps, MessageModalProps } from "@/lib/types/modals";
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type ModalType = "confirm" | "message" | "error"; 
+type ModalPropsMap = {
+  confirm: ConfirmModalProps;
+  message: MessageModalProps;
+};
+
+type ModalType = keyof ModalPropsMap;
 
 type ModalContextType = {
-  openModal: (type: ModalType, props?: Record<string, any>) => void;
+  openModal: <T extends ModalType>(type: T, props: ModalPropsMap[T]) => void;
   closeModal: () => void;
   isOpen: boolean;
   type: ModalType | null;
-  props: Record<string, any>;
+  props: ModalPropsMap[ModalType] | null;
 };
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -17,9 +23,9 @@ const ModalContext = createContext<ModalContextType | null>(null);
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState<ModalType | null>(null);
-  const [props, setProps] = useState<Record<string, any>>({});
+  const [props, setProps] = useState<ModalPropsMap[ModalType] | null>(null);
 
-  const openModal = (type: ModalType, props: Record<string, any> = {}) => {
+  const openModal = <T extends ModalType>(type: T, props: ModalPropsMap[T]) => {
     setType(type);
     setProps(props);
     setIsOpen(true);
@@ -28,11 +34,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const closeModal = () => {
     setIsOpen(false);
     setType(null);
-    setProps({});
+    setProps(null);
   };
 
   return (
-    <ModalContext.Provider value={{ isOpen, openModal, closeModal, type, props }}>
+    <ModalContext.Provider
+      value={{ isOpen, openModal, closeModal, type, props }}
+    >
       {children}
     </ModalContext.Provider>
   );

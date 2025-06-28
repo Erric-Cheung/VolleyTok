@@ -160,9 +160,8 @@ export const followUser = async (followId: string) => {
     INSERT INTO activities (type, actor_id, target_id, post_id)
     VALUES ('follow', ${currentUser.user_id}, ${followId}, NULL);
     `;
-
   } catch (error) {
-    console.log("Error following user");
+    console.log("Error following user: " + error);
     return { error: "Failed to follow user." };
   }
 
@@ -189,21 +188,10 @@ export const unfollowUser = async (unfollowId: string) => {
       return { error: "Not following user." };
     }
   } catch (error) {
-    console.log("Error following user");
+    console.log("Error unfollowing user" + error);
     return { error: "Failed to unfollow user." };
   }
 
   return { success: true };
 };
 
-export const clearActivity = async () => {
-  
-}
-
-export const deleteActivityById = async () => {
-
-}
-
-const updateUsername = async () => {};
-
-const updateBio = async () => {};

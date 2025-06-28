@@ -7,7 +7,7 @@ interface buttonProps {
   label?: string;
 }
 
-const IconButton = ({ onClick, icon, disabled, label }: buttonProps) => {
+const IconButton = ({ onClick, icon, label }: buttonProps) => {
   return (
     <button
       className="flex py-2 px-2 justify-center items-center rounded-full bg-gray-200 hover:bg-gray-300"

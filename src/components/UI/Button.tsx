@@ -4,7 +4,7 @@ interface buttonProps {
   children: React.ReactNode;
   disabled?: boolean;
 }
-const Button = ({ color, onClick, children, disabled }: buttonProps) => {
+const Button = ({  onClick, children, disabled }: buttonProps) => {
   const baseClasses = "flex items-center justify-center border rounded font-medium";
   const enabledClasses = "hover:bg-gray-100 cursor-pointer";
   const disabledClasses = "bg-gray-200 text-gray-500 cursor-not-allowed";

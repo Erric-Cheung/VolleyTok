@@ -1,7 +1,6 @@
 "use server";
 
 import { getCurrentUser } from "@/lib/data/user";
-import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
 
 const MainLayout = async ({ children }: { children: React.ReactNode }) => {

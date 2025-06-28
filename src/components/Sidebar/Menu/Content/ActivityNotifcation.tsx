@@ -6,6 +6,7 @@ import Link from "next/link";
 interface NotificationProps {
   username: string;
   label?: string;
+  time?: string;
 }
 
 const ActivityNotication = ({ username, label }: NotificationProps) => {
@@ -16,12 +17,15 @@ const ActivityNotication = ({ username, label }: NotificationProps) => {
           <CgProfile size={44}></CgProfile>
         </div>
         <div className="px-2 text-left ">
-          <Link href={`/@${username}`} onClick={(e) => e.stopPropagation()}>
-            <div className="font-bold hover:underline text-sm leading-[18px]">
-              {username}
-            </div>
-          </Link>
+          <div className="flex w-fit">
+            <Link href={`/@${username}`} onClick={(e) => e.stopPropagation()}>
+              <div className="font-bold hover:underline text-sm leading-[18px]">
+                {username}
+              </div>
+            </Link>
+          </div>
           {label && <div className="text-sm ">{label} </div>}
+          {label && <div className="text-xs text-gray-500 ">7 days ago</div>}
         </div>
       </span>
     </div>

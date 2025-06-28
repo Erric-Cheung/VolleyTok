@@ -1,6 +1,5 @@
 import "server-only";
 import { cache } from "react";
-import { auth0 } from "@/lib/auth0";
 import { sql } from "@vercel/postgres";
 import { Post, Comment } from "../types/types";
 import { getCurrentUser } from "./user";

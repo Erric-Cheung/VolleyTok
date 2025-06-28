@@ -1,13 +1,14 @@
 "use client";
 
-import TextInput from "@/components/Input/TextInput/TextInput";
-import { Upload } from "antd";
+import { Upload, UploadFile } from "antd";
 import { useState } from "react";
 import { createPost, createPresignedURL } from "@/lib/actions/posts";
 import { v4 as uuidv4 } from "uuid";
+import TextInput from "@/components/Input/TextInput/TextInput";
 import TextBox from "@/components/Input/TextInput/TextBox";
 import FormButton from "@/components/Input/Buttons/FormButton";
 import { useNavigate } from "@/lib/utils/useNavigate";
+import { RcFile, UploadChangeParam } from "antd/es/upload";
 
 type UploadError = {
   title?: string;
@@ -16,50 +17,55 @@ type UploadError = {
 };
 
 const ALLOWED_TYPES = ["video/mp4"];
+const MAX_SIZE = 50 * 1024 * 1024; // 50MB limit
 
 export default function UploadForm() {
-  const [previewUrl, setPreviewUrl] = useState(null); // File URL for preview
-  const [uploadedFileInfo, setUploadedFileInfo] = useState<any>(null); // Uploaded file info
-  const [uploadedFile, setUploadedFile] = useState<any>(null); // Uploaded file list
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // File URL for preview
+  const [uploadedFileInfo, setUploadedFileInfo] = useState<UploadFile | null>(
+    null
+  ); // Uploaded file info
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null); // Uploaded file list
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState<UploadError>({});
 
   const { navigate } = useNavigate();
 
-  const handleChange = async ({ fileList, file }: any) => {
+  const handleChange = async ({ fileList }: UploadChangeParam) => {
     // Handle preview generation for the latest file
     if (fileList.length > 0) {
       const latestFile = fileList[0]; // we allow only one file
       setUploadedFileInfo(latestFile);
-      setUploadedFile(file);
+      setUploadedFile(latestFile.originFileObj as File);
 
       if (!latestFile.url && !latestFile.preview) {
         latestFile.preview = await new Promise((resolve) => {
           const reader = new FileReader();
-          reader.readAsDataURL(latestFile.originFileObj);
-          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(latestFile.originFileObj as RcFile);
+          reader.onload = () => resolve(reader.result as string);
         });
       }
 
       // Set the preview URL to display the file
-      setPreviewUrl(latestFile.url || latestFile.preview);
+      setPreviewUrl(latestFile.url || (latestFile.preview as string));
     } else {
-      // If no file is uploaded, clear the preview
       setPreviewUrl(null);
     }
-
-    console.log(fileList);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => { 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsUploading(true);
     setUploadError({});
 
     // Client Side Validation
-    const maxSize = 50 * 1024 * 1024; // 50MB limit
-    if (!uploadedFile || uploadedFile.size > maxSize) {
+    if (
+      !uploadedFile ||
+      !uploadedFileInfo ||
+      uploadedFile.type !== "video/mp4" ||
+      !uploadedFile.size ||
+      uploadedFile.size > MAX_SIZE
+    ) {
       setUploadError({
         file: "Error uploading file. Please include a MP4 file under 50 MB",
       });
@@ -70,8 +76,8 @@ export default function UploadForm() {
     const uuid = uuidv4();
     const formData = new FormData(e.currentTarget);
     formData.append("fileName", uploadedFileInfo.name);
-    formData.append("fileSize", uploadedFileInfo.size);
-    formData.append("fileType", uploadedFileInfo.type);
+    formData.append("fileSize", uploadedFileInfo.size?.toString() || "");
+    formData.append("fileType", uploadedFileInfo.type || "");
     formData.append("fileId", uuid);
 
     try {
@@ -88,7 +94,7 @@ export default function UploadForm() {
         method: "PUT",
         body: uploadedFile,
         headers: {
-          "Content-Type": uploadedFileInfo.type,
+          "Content-Type": uploadedFileInfo.type || "video/mp4",
         },
       });
 
@@ -101,7 +107,7 @@ export default function UploadForm() {
       const postResponse = await createPost(formData);
       if (postResponse.success) {
         setUploadMessage(postResponse.success);
-        navigate(`/posts/${uuid}`);
+        navigate(`/posts/${postResponse.postId}`);
       }
     } catch (error) {
       console.error("Upload error:", error);

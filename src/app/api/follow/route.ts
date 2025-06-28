@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/data/user";
 /**
  * POST method to handle follow and unfollow of a user
  * @param type The action type ("follow" or "unfollow").
- * @param user The user id to follow or unfollow  
+ * @param user The user id to follow or unfollow
  */
 
 export async function POST(req: Request) {
@@ -15,16 +15,16 @@ export async function POST(req: Request) {
     const session = await auth0.getSession();
     const currentUser = await getCurrentUser();
 
-    console.log(type)
-    console.log(userId)
+    console.log(type);
+    console.log(userId);
 
     if (!session || !currentUser) {
       // redirect login
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!userId){
-      console.log("ERROR HERE")
+    if (!userId) {
+      console.log("ERROR HERE");
       return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     }
 
@@ -59,9 +59,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  } catch (error) { 
+  } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error: " + error },
       { status: 500 }
     );
   }

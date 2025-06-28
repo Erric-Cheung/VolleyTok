@@ -6,7 +6,6 @@ import PageModal from "@/components/Modals/RouteModals/PageModal";
 import {
   getIdPost,
   getPostComments,
-  getPostLikedUsers,
   getPostLikeInfo,
 } from "@/lib/data/post";
 

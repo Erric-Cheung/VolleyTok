@@ -6,10 +6,9 @@ import { userSchema } from "@/lib/types/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-// Displayed page to create username if non existing
-// redirect if already created in middleware?
-// redirect if not logged in?
+type UserFormData = z.infer<typeof userSchema>;
 
 export default function WelcomePage() {
   const [serverErrors, setServerErrors] = useState<UserError>({});
@@ -22,7 +21,7 @@ export default function WelcomePage() {
     defaultValues: { bio: "" },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: UserFormData) => {
     setServerErrors({});
     const formData = new FormData();
     formData.append("username", data.username);

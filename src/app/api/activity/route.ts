@@ -1,8 +1,7 @@
-import { sql } from "@vercel/postgres";
-import { auth0 } from "@/lib/auth0";
 import { getActivityNotifications, getCurrentUser } from "@/lib/data/user";
 
-export async function GET(req: Request) {
+// GET Route for user activity 
+export async function GET() {
   try {
     console.log("ACTIVTIES GET REQUEST");
 

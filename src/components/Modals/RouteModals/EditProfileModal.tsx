@@ -2,13 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import TextBox from "../../Input/TextInput/TextBox";
-import ControlledTextInput from "../../Input/ControlledInput/ControlledTextInput";
-import { updateUser } from "@/lib/actions/user";
-import BackButton from "../../Input/Buttons/BackButton";
 import { useNavigate } from "@/lib/utils/useNavigate";
-import Button from "../../UI/Button";
+import { updateUser } from "@/lib/actions/user";
 import { UserError } from "@/lib/types/types";
+import ControlledTextInput from "../../Input/ControlledInput/ControlledTextInput";
+import BackButton from "../../Input/Buttons/BackButton";
+import Button from "../../UI/Button";
 import ControlledTextBox from "../../Input/ControlledInput/ControlledTextBox";
 
 const EditProfileModal = ({
@@ -42,7 +41,7 @@ const EditProfileModal = ({
     window.addEventListener("keydown", onKeyDownHandler);
 
     return () => window.removeEventListener("keydown", onKeyDownHandler);
-  }, [router]);
+  }, [router, back]);
 
   // Check if values have changed from the original
   useEffect(() => {
@@ -78,9 +77,7 @@ const EditProfileModal = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-    >
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div
         className="bg-white w-full h-full sm:w-[600px] sm:h-[650px] rounded"
         onClick={(e) => e.stopPropagation()}

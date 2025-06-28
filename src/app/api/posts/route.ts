@@ -1,13 +1,12 @@
 import { sql } from "@vercel/postgres";
-import { auth0 } from "@/lib/auth0";
 import { NextRequest, NextResponse } from "next/server";
 
+// Route for getting posts with username
 export async function GET(req: NextRequest) {
   try {
-    console.log("---- FETCHING POSTS API ----")
+    console.log("---- FETCHING POSTS API ----");
     const searchParams = req.nextUrl.searchParams;
     const username = searchParams.get("username");
-    console.log(username);
 
     if (!username) {
     }
@@ -27,7 +26,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error: " + error },
       { status: 500 }
     );
   }

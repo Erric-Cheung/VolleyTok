@@ -4,10 +4,6 @@ import { auth0 } from "@/lib/auth0";
 import Link from "next/link";
 
 const Header = async () => {
-  const onClickHandler = () => {
-    // Change Theme (Night/Day)
-  };
-
   const session = await auth0.getSession();
 
   return (
@@ -19,17 +15,21 @@ const Header = async () => {
       </span>
       {session?.user ? (
         <>
-          <a href="/upload">
+          <Link href="/upload">
             <div className="mr-4 p-2">Upload Video</div>
-          </a>
+          </Link>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/auth/logout">
             <div className="bg-red-500 p-2">Logout</div>
           </a>
         </>
       ) : (
-        <a href="/auth/login">
-          <div className="bg-red-500 p-2">Login</div>
-        </a>
+        <>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/auth/login">
+            <div className="bg-red-500 p-2">Login</div>
+          </a>
+        </>
       )}
     </header>
   );

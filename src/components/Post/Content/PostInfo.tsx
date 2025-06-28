@@ -59,7 +59,7 @@ const PostInfo = async ({
             ></LikeButton>
           </div>
           <div className="flex gap-2">
-            <ShareButton postId={postId} />
+            <ShareButton/>
             {isPostOwner && <DeleteButton postId={postId} />}
           </div>
         </div>

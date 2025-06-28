@@ -21,7 +21,7 @@ const MessageModal = ({ message, type = "default", onClose }: ModalProps) => {
       clearTimeout(fadeTimer);
       clearTimeout(closeTimer);
     };
-  }, [duration, onClose]);
+  }, [onClose]);
 
   const getColorClasses = () => {
     switch (type) {

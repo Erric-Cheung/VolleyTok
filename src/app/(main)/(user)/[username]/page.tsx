@@ -46,8 +46,8 @@ export default async function Profile({
   const followingResult = await getFollowingList(username);
   const posts = await getUsernamePosts(username);
 
-  const postRes = await fetch(`http://localhost:3000/api/posts?username=${username}`);
-  const data = await postRes.json();
+  // const postRes = await fetch(`http://localhost:3000/api/posts?username=${username}`);
+  // const data = await postRes.json();
   // console.log(data);
 
   return (

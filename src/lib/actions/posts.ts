@@ -24,11 +24,10 @@ export const createPresignedURL = async (formData: FormData) => {
 
   // Check if fileId exists in S3 before creating post
 
-  let errors: Errors = {};
+  const errors: Errors = {};
 
   // Verify user and file
   if (!session) errors.authenticated = "Not authenticated";
-  if (!fileId) errors.file = "Please add a file";
   if (!postTitle) errors.title = "Please add a title";
   if (!postDescription) errors.description = "Please include a description.";
 
@@ -70,7 +69,7 @@ export const createPost = async (formData: FormData) => {
   const postDescription = formData.get("description") as string;
   const fileId = formData.get("fileId") as string;
 
-  let errors: Errors = {};
+  const errors: Errors = {};
 
   // Verify user and file
   if (!session) errors.authenticated = "Not authenticated";
@@ -96,7 +95,7 @@ export const createPost = async (formData: FormData) => {
 
   // redirect
 
-  return { success: "Successfully created post." };
+  return { success: "Successfully created post.", postId: postId };
 };
 
 export const createComment = async (comment: string, postId: string) => {
@@ -110,7 +109,7 @@ export const createComment = async (comment: string, postId: string) => {
         message: "",
       };
 
-    let errors: Errors = {};
+    const errors: Errors = {};
 
     if (!comment.trim()) errors.comment = "Please add a comment";
 
@@ -186,7 +185,6 @@ export const likePost = async (postId: string) => {
   const user = await getCurrentUser();
   console.log("LIKING POST");
 
-  let errors: Errors = {};
   if (!user) {
     // redirect to login
     return;
@@ -226,7 +224,6 @@ export const unlikePost = async (postId: string) => {
   const user = await getCurrentUser();
   console.log("LIKING POST");
 
-  let errors: Errors = {};
   if (!user) {
     // redirect to login
     return;

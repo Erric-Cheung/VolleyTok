@@ -4,7 +4,7 @@ import IconButton from "@/components/UI/IconButton";
 import { useModal } from "@/components/Utility/ModalContext";
 import { FiLink } from "react-icons/fi";
 
-const ShareButton = ({ postId }: { postId: string }) => {
+const ShareButton = () => {
   const { openModal } = useModal();
 
   return (
