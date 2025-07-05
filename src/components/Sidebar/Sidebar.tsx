@@ -50,11 +50,11 @@ const Sidebar = ({ user }: userProps) => {
 
   return (
     <>
-      <div className="flex relative bg-white">
-        <div className={`flex flex-col ${menuIsOpen ? "md:w-60" : "md:w-60"} `}>
+      <div className="flex relative bg-white border-r lg:border-none">
+        <div className={`flex flex-col lg:w-60 `}>
           <div
             className={`p-2 z-50 ${
-              menuIsOpen ? "md:w-fit" : ""
+              menuIsOpen ? "lg:w-fit" : ""
             } bg-white h-full`}
           >
             <div className="flex ">

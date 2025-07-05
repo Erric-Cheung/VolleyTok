@@ -15,17 +15,17 @@ const LikeButton = ({
   userLiked: boolean;
 }) => {
   const [isLiked, setIsLiked] = useState(userLiked);
-  const [likeCount, setLikeCount] = useState(totalLikes);
+  const [likeCount, setLikeCount] = useState<number>(totalLikes);
   const handleLike = async () => {
     const res = isLiked ? await unlikePost(postId) : await likePost(postId);
     if (!res?.success) {
       return;
     }
     setLikeCount(res.likeCount);
-    setIsLiked(!isLiked)
+    setIsLiked(!isLiked);
   };
 
-  console.log(isLiked)
+  console.log(isLiked);
 
   return (
     <IconButton
@@ -35,7 +35,9 @@ const LikeButton = ({
         <FiHeart
           size={24}
           className={`transition-colors ${
-            isLiked ? "fill-black hover:fill-gray-200" : "fill-gray-200 hover:fill-black"
+            isLiked
+              ? "fill-black hover:fill-gray-200"
+              : "fill-gray-200 hover:fill-black"
           }`}
         />
       }

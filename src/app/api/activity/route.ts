@@ -1,6 +1,6 @@
 import { getActivityNotifications, getCurrentUser } from "@/lib/data/user";
 
-// GET Route for user activity 
+// GET Route for user activity
 export async function GET() {
   try {
     console.log("ACTIVTIES GET REQUEST");

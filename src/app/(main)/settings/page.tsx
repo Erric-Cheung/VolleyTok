@@ -1,7 +1,7 @@
 // JUST NEEDS TO BE HOME BACKGROUND ?
 "use server";
 
-import PostList from "@/components/Post/PostList";
+import PostPreviewList from "@/components/Post/PostPreviewList";
 import { getLatestPosts } from "@/lib/data/post";
 
 // Settings with home fallback page
@@ -15,7 +15,7 @@ export default async function SettingsHome() {
       <div className="flex flex-col gap-8 row-start-2 items-center w-full">
         <div className="max-w-[1920px] w-full p-4">
           <div className="mb-2">Latest Clips</div>
-          <PostList posts={posts}></PostList>
+          <PostPreviewList posts={posts}/>
         </div>
       </div>
     </div>

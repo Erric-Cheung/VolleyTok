@@ -8,7 +8,7 @@ interface PostListProps {
   posts: Post[];
 }
 
-const PostList = ({ posts }: PostListProps) => {
+const PostPreviewList = ({ posts }: PostListProps) => {
   // if (posts.length === 0) {
   //   return <div className="w-full">No videos found.</div>;
   // }
@@ -22,7 +22,7 @@ const PostList = ({ posts }: PostListProps) => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(228px,1fr))] gap-4">
           {posts.map((post, i) => (
             <PostPreview post={post} key={i}></PostPreview>
           ))}
@@ -32,4 +32,4 @@ const PostList = ({ posts }: PostListProps) => {
   );
 };
 
-export default PostList;
+export default PostPreviewList;

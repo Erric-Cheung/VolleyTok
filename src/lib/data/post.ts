@@ -10,87 +10,149 @@ export const getUsernamePosts = async (username: string) => {
 
   console.log("------ USER POSTS------");
 
-  const { rows } = await sql<{
-    file_id: string;
-    post_id: string;
-    uploader: string;
-    uploader_id: string;
-    title: string;
-    description: string;
-    likes: number;
-    timestamp: string;
-  }>`SELECT file_id, post_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE uploader = ${username}`;
+  try {
+    const currentUser = await getCurrentUser();
+    const { rows } = await sql<{
+      file_id: string;
+      post_id: string;
+      uploader: string;
+      uploader_id: string;
+      title: string;
+      description: string;
+      likes: number;
+      timestamp: string;
+      user_liked: boolean;
+    }>`
+    SELECT 
+    p.post_id,
+    p.file_id,
+    p.uploader,
+    p.uploader_id,
+    p.description,
+    p.title,
+    p.timestamp,
+    (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.post_id) AS likes,
+    EXISTS (
+      SELECT 1 FROM likes l WHERE l.post_id = p.post_id AND l.user_id = ${currentUser?.user_id}
+      ) AS user_liked
+    FROM posts p 
+    WHERE uploader = ${username}`;
 
-  const posts: Post[] = rows.map((row) => ({
-    ...row,
-    timestamp: new Date(row.timestamp),
-    timeAgo: timeAgo(row.timestamp),
-    videoUrl: process.env.CLOUDFRONT_URL + "/" + row.file_id,
-  }));
+    const posts: Post[] = rows.map((row) => ({
+      ...row,
+      timestamp: new Date(row.timestamp),
+      timeAgo: timeAgo(row.timestamp),
+      videoUrl: process.env.CLOUDFRONT_URL + "/" + row.file_id,
+    }));
 
-  return posts;
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
 };
 
 // Get latest 10 posts after offset
-export const getLatestPosts = cache(async (page = 1): Promise<Post[]> => {
+export const getLatestPosts = cache(async (page = 1) => {
   console.log("----- LATEST POSTS -----");
   const pageSize = 10; // Number of posts per page
   const offset = (page - 1) * pageSize; // Calculate offset
 
-  const { rows } = await sql<{
-    file_id: string;
-    post_id: string;
-    uploader: string;
-    uploader_id: string;
-    title: string;
-    description: string;
-    likes: number;
-    timestamp: string;
-  }>`
-    SELECT file_id, post_id, uploader, uploader_id description, title, likes, timestamp 
-    FROM posts
-    ORDER BY timestamp DESC
+  try {
+    const currentUser = await getCurrentUser();
+
+    const { rows } = await sql<{
+      post_id: string;
+      file_id: string;
+      uploader: string;
+      uploader_id: string;
+      description: string;
+      title: string;
+      likes: number;
+      timestamp: string;
+      user_liked: boolean;
+    }>`
+    SELECT 
+      p.post_id,
+      p.file_id,
+      p.uploader,
+      uploader_id,
+      p.description,
+      p.title,
+      p.likes,
+      p.timestamp,   
+      (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.post_id) AS likes,
+      EXISTS (
+        SELECT 1 FROM likes l WHERE l.post_id = p.post_id AND l.user_id = ${currentUser?.user_id}
+      ) AS user_liked
+    FROM posts p
+    ORDER BY p.timestamp DESC
     LIMIT ${pageSize} OFFSET ${offset}
   `;
 
-  const posts: Post[] = rows.map((row) => ({
-    ...row,
-    timestamp: new Date(row.timestamp),
-    timeAgo: timeAgo(row.timestamp),
-    videoUrl: process.env.CLOUDFRONT_URL + "/" + row.file_id,
-  }));
+    const posts: Post[] = rows.map((row) => ({
+      ...row,
+      timestamp: new Date(row.timestamp),
+      timeAgo: timeAgo(row.timestamp),
+      videoUrl: process.env.CLOUDFRONT_URL + "/" + row.file_id,
+    }));
 
-  return posts;
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
 });
 
 // Get post with the id
-export const getIdPost = async (id: string): Promise<Post | null> => {
+export const getIdPost = async (id: string) => {
   console.log("----- FETCHING POST -----");
-  const { rows, rowCount } = await sql<{
-    file_id: string;
-    post_id: string;
-    uploader: string;
-    uploader_id: string;
-    title: string;
-    description: string;
-    likes: number;
-    timestamp: string;
-  }>`SELECT file_id, post_id, uploader, uploader_id, description, title, likes, timestamp FROM posts WHERE post_id = ${id}`;
 
-  console.log(id);
+  try {
+    const currentUser = await getCurrentUser();
 
-  if (rowCount == 0) {
-    return null;
+    const { rows, rowCount } = await sql<{
+      file_id: string;
+      post_id: string;
+      uploader: string;
+      uploader_id: string;
+      title: string;
+      description: string;
+      likes: number;
+      timestamp: string;
+      user_liked: boolean;
+    }>`    
+    SELECT 
+      p.post_id,
+      p.file_id,
+      p.uploader,
+      p.uploader_id,
+      p.description,
+      p.title,
+      p.likes,
+      p.timestamp,
+      (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.post_id) AS likes,
+      EXISTS (
+        SELECT 1 FROM likes l WHERE l.post_id = p.post_id AND l.user_id = ${currentUser?.user_id}
+        ) AS user_liked
+    FROM posts p WHERE post_id = ${id}`;
+
+    if (rowCount == 0) {
+      return;
+    }
+
+    const post: Post = {
+      ...rows[0],
+      timestamp: new Date(rows[0].timestamp),
+      timeAgo: timeAgo(rows[0].timestamp),
+      videoUrl: process.env.CLOUDFRONT_URL + "/" + rows[0].file_id,
+    };
+
+    return post;
+  } catch (error) {
+    console.log(error);
+    return;
   }
-
-  const post: Post = {
-    ...rows[0],
-    timestamp: new Date(rows[0].timestamp),
-    timeAgo: timeAgo(rows[0].timestamp),
-    videoUrl: process.env.CLOUDFRONT_URL + "/" + rows[0].file_id,
-  };
-
-  return post;
 };
 
 // Get comments from postId

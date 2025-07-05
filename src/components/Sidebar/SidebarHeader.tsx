@@ -17,7 +17,7 @@ const SidebarHeader = ({ title, href, icon, shorten }: sidebarHeaderProps) => {
           <div className="flex w-[32px] h-[32px] items-center justify-center">
             {icon}
           </div>
-          <div className={`font-bold hidden md:flex ${shorten ? "md:hidden" : ""}`}>{title}</div>
+          {!shorten && <div className="font-bold hidden lg:block">{title}</div>}
         </div>
       </div>
     </Link>

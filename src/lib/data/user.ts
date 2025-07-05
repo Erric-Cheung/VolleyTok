@@ -96,7 +96,9 @@ export const getFollowingList = async (username: string) => {
 export const getActivityNotifications = async (userId: string) => {
   const { rows } = await sql`
     SELECT 
-      a.*, 
+      a.id,
+      a.type,
+      a.created_at,
       u.username AS actor_username
     FROM activities a
     JOIN users u ON a.actor_id = u.user_id

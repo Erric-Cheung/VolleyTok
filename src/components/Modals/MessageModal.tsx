@@ -35,7 +35,7 @@ const MessageModal = ({ message, type = "default", onClose }: ModalProps) => {
   };
 
   return (
-    <div className="fixed w-full top-[16px] pointer-events-none">
+    <div className="fixed w-full top-[16px] pointer-events-none z-[9999]">
       <div className="flex items-center justify-center text-center py-[8px] ">
         <div
           role="alert"

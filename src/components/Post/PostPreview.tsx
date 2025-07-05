@@ -27,7 +27,7 @@ const PostPreview = ({ post}: PostPreviewProps) => {
   };
 
   return (
-    <div className="mr-6">
+    <div className="">
       <Link href={`/posts/${post.post_id}`}>
         <div className="relative w-full overflow-hidden cursor-pointer">
           <div className="relative pt-[133.333%] w-full overflow-hidden">
@@ -36,7 +36,7 @@ const PostPreview = ({ post}: PostPreviewProps) => {
                 onMouseEnter={onMouseEnterHandler}
                 onMouseLeave={onMouseLeaveHandler}
                 onClick={onClickHandler}
-                className="absolute top-0 left-0 w-full h-full object-cover bg-black rounded"
+                className="absolute top-0 left-0 w-full h-full object-cover bg-black rounded-xl"
                 muted
               >
                 <source src={post.videoUrl} type="video/mp4"></source>
@@ -47,10 +47,10 @@ const PostPreview = ({ post}: PostPreviewProps) => {
       </Link>
       <div className="p-2 pt-1 font-bold text-sm ">
         <div className="flex justify-between">
-          <span>{post.title}</span>
+          <span>{post.uploader}</span>
           <span>{post.timeAgo}</span>
         </div>
-        <div className="">{post.uploader}</div>
+        {/* <div className="">{post.title}</div> */}
       </div>
     </div>
   );

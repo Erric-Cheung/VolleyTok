@@ -1,7 +1,7 @@
 "use server";
 
 import FollowButton from "@/components/Input/Buttons/FollowButton";
-import PostList from "@/components/Post/PostList";
+import PostPreviewList from "@/components/Post/PostPreviewList";
 import UserIcon from "@/components/UI/UserIcon";
 import { auth0 } from "@/lib/auth0";
 import { notFound } from "next/navigation";
@@ -45,6 +45,7 @@ export default async function Profile({
   const followersResult = await getFollowerList(username);
   const followingResult = await getFollowingList(username);
   const posts = await getUsernamePosts(username);
+  console.log(posts);
 
   // const postRes = await fetch(`http://localhost:3000/api/posts?username=${username}`);
   // const data = await postRes.json();
@@ -92,7 +93,7 @@ export default async function Profile({
           {/* <div className="mb-2 border-b flex-1">Liked</div>
           <div className="mb-2 border-b flex-1">Saved</div> */}
         </div>
-        <PostList posts={posts}></PostList>
+        <PostPreviewList posts={posts ? posts : []} />
       </div>
     </div>
   );

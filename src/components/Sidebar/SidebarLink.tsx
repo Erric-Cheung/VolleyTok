@@ -32,11 +32,7 @@ const SidebarLink = ({
         <div className="flex w-[40px] h-[40px] items-center justify-center ">
           {icon}
         </div>
-        <div
-          className={`font-bold hidden md:flex ${shorten ? "md:hidden" : ""} `}
-        >
-          {title}
-        </div>
+        {!shorten && <div className="font-bold hidden lg:block">{title}</div>}
       </div>
     </div>
   );

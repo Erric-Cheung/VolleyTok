@@ -77,7 +77,7 @@ const EditProfileModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100]">
       <div
         className="bg-white w-full h-full sm:w-[600px] sm:h-[650px] rounded"
         onClick={(e) => e.stopPropagation()}

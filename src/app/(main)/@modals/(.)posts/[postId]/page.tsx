@@ -3,7 +3,11 @@
 import PostInfo from "@/components/Post/Content/PostInfo";
 import PostVideo from "@/components/Post/Content/PostVideo";
 import PageModal from "@/components/Modals/RouteModals/PageModal";
-import { getIdPost, getPostComments, getPostLikeInfo } from "@/lib/data/post";
+import {
+  getIdPost,
+  getPostComments,
+  getPostLikeInfo,
+} from "@/lib/data/post";
 
 export default async function PostModal({
   params,
@@ -15,7 +19,7 @@ export default async function PostModal({
   const comments = await getPostComments(postId);
   const likeInfo = await getPostLikeInfo(postId);
 
-  console.log(likeInfo);
+  console.log("GLOBAL MODAL");
 
   if (!post) {
     // redirect or display 404

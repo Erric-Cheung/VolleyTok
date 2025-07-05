@@ -9,6 +9,7 @@ export interface Post {
   timeAgo: string;
   timestamp: Date;
   likes: number;
+  user_liked: boolean;
 }
 
 export interface Comment {
