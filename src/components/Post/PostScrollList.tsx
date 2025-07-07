@@ -5,6 +5,9 @@ import PostScrollVideo from "./Content/PostScrollVideo";
 import { useEffect, useRef, useState } from "react";
 import LikeButton from "./Content/Buttons/LikeButton";
 import ShareButton from "./Content/Buttons/ShareButton";
+import MuteButton from "./Content/Buttons/MuteButton";
+import IconButton from "../UI/IconButton";
+import { GoArrowDown, GoArrowUp } from "react-icons/go";
 
 interface PostListProps {
   initialPosts: Post[];
@@ -63,7 +66,7 @@ const PostScrollList = ({ initialPosts }: PostListProps) => {
 
   return (
     <div className="relative">
-      <div className="h-screen overflow-y-scroll overflow-hidden snap-y snap-mandatory">
+      <div className="h-screen overflow-y-scroll overflow-hidden snap-y snap-mandatory px-4 no-scrollbar">
         {posts.map((post, i) => (
           <div
             className="h-screen snap-start flex justify-center items-center"
@@ -73,19 +76,18 @@ const PostScrollList = ({ initialPosts }: PostListProps) => {
             }} // assign each post to the ref array
           >
             {/* Post Container */}
-            <div className="flex w-full gap-4 items-end justify-center">
-              <div className=" h-full w-full max-h-[calc(100vh-4rem)] max-w-[calc((100vh-4rem)*9/16)]  overflow-hidden cursor-pointer">
+            <div className="flex flex-col w-full gap-2 items-center justify-center sm:flex-row sm:items-end">
+              <div className=" h-full w-full min-w-[240px] max-h-[calc(100vh-4rem)] max-w-[calc((100vh-4rem)*9/16)] overflow-hidden cursor-pointer ">
                 <div className="relative w-full h-full max-h-[calc(100vh-4rem)] max-w-[calc((100vh-4rem)*9/16)] aspect-[9/16] overflow-hidden rounded-xl bg-black">
                   <PostScrollVideo videoUrl={post.videoUrl} muted={isMuted} />
                   {/* Mute Button */}
                   <div className="absolute top-0 left-0 w-full p-4 z-10 text-white bg-gradient-to-b from-black/70 to-transparent">
-                    <button
-                      onClick={() => {
+                    <MuteButton
+                      toggleMute={() => {
                         setIsMuted(!isMuted);
                       }}
-                    >
-                      {isMuted ? "Unmute" : "Mute"}
-                    </button>
+                      isMuted={isMuted}
+                    />
                   </div>
                   {/* Post Info */}
                   <div className="absolute bottom-0 left-0 w-full p-4 z-10 text-white bg-gradient-to-b from-transparent to-black/70">
@@ -104,7 +106,7 @@ const PostScrollList = ({ initialPosts }: PostListProps) => {
                 </div>
               </div>
               {/* Post Actions */}
-              <div className="flex flex-col gap-4 h-full">
+              <div className="flex gap-4 h-full sm:grow-0 sm:flex-col">
                 <div>
                   <LikeButton
                     postId={post.post_id}
@@ -119,18 +121,20 @@ const PostScrollList = ({ initialPosts }: PostListProps) => {
             </div>
           </div>
         ))}
-        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 flex flex-col gap-4">
+        <div className="hidden sm:flex flex-col gap-4 absolute right-4 top-1/2 transform -translate-y-1/2 z-30 sm:flex">
           <button
-            className="bg-black/70 text-white px-4 py-2 rounded"
+            className={`rounded bg-gray-200 p-2 ${currentIndex <= 0 ? "opacity-50" : ""}` }
+            disabled={currentIndex <= 0}
             onClick={() => scrollTo(currentIndex - 1)}
           >
-            ↑
+            <GoArrowUp size={20} />
           </button>
           <button
-            className="bg-black/70 text-white px-4 py-2 rounded"
+            className={`rounded bg-gray-200 p-2 ${currentIndex >= posts.length - 1 ? "opacity-50" : ""}`}
+            disabled={currentIndex >= posts.length - 1}
             onClick={() => scrollTo(currentIndex + 1)}
-          >
-            ↓
+            >
+            <GoArrowDown size={20} />
           </button>
         </div>
       </div>

@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <div className="items-center justify-items-center min-h-screen font-[family-name:var(--font-geist-sans)] ">
       <div className="flex flex-col gap-8 row-start-2 items-center w-full">
-        <div className="max-w-[1920px] w-full ">
+        <div className=" w-full ">
           <PostScrollList initialPosts={posts} />
         </div>
       </div>
