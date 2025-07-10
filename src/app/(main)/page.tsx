@@ -1,14 +1,10 @@
 "use server";
 
 import PostScrollList from "@/components/Post/PostScrollList";
-import { getLatestPosts } from "@/lib/data/post";
+import { getLatestPostsWithOffset } from "@/lib/data/post";
 
 export default async function Home() {
-  const posts = await getLatestPosts();
-  console.log(posts);
-  if (!posts) {
-    return;
-  }
+  const posts = await getLatestPostsWithOffset(0, 5);
 
   return (
     <div className="items-center justify-items-center min-h-screen font-[family-name:var(--font-geist-sans)] ">

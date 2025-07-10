@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { getCurrentEntry, goBack, pushRoute } from "./util";
+import { getCurrentEntry, goBack, pushRoute } from "./navigate";
 
 export function useNavigate() {
   const router = useRouter();

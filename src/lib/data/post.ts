@@ -52,7 +52,7 @@ export const getUsernamePosts = async (username: string) => {
   }
 };
 
-// Get latest 10 posts after offset
+// Get latest 10 posts after page offset
 export const getLatestPosts = cache(async (page = 1) => {
   console.log("----- LATEST POSTS -----");
   const pageSize = 10; // Number of posts per page
@@ -60,7 +60,6 @@ export const getLatestPosts = cache(async (page = 1) => {
 
   try {
     const currentUser = await getCurrentUser();
-
     const { rows } = await sql<{
       post_id: string;
       file_id: string;
@@ -88,7 +87,7 @@ export const getLatestPosts = cache(async (page = 1) => {
     FROM posts p
     ORDER BY p.timestamp DESC
     LIMIT ${pageSize} OFFSET ${offset}
-  `;
+    `;
 
     const posts: Post[] = rows.map((row) => ({
       ...row,
@@ -99,10 +98,61 @@ export const getLatestPosts = cache(async (page = 1) => {
 
     return posts;
   } catch (error) {
-    console.log(error);
-    return;
+    throw error;
   }
 });
+
+export const getLatestPostsWithOffset = cache(
+  async (offset = 0, limit = 10) => {
+    console.log("----- LATEST OFFSET POSTS -----");
+    const postLimit = Math.max(1, Math.min(limit, 20));
+    console.log(limit);
+    console.log(postLimit);
+    const currentUser = await getCurrentUser();
+
+    try {
+      const { rows } = await sql<{
+        post_id: string;
+        file_id: string;
+        uploader: string;
+        uploader_id: string;
+        description: string;
+        title: string;
+        likes: number;
+        timestamp: string;
+        user_liked: boolean;
+      }>`
+      SELECT 
+        p.post_id,
+        p.file_id,
+        p.uploader,
+        uploader_id,
+        p.description,
+        p.title,
+        p.likes,
+        p.timestamp,   
+        (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.post_id) AS likes,
+        EXISTS (
+          SELECT 1 FROM likes l WHERE l.post_id = p.post_id AND l.user_id = ${currentUser?.user_id}
+        ) AS user_liked
+      FROM posts p
+      ORDER BY p.timestamp DESC
+      LIMIT ${postLimit} OFFSET ${offset}
+      `;
+
+      const posts: Post[] = rows.map((row) => ({
+        ...row,
+        timestamp: new Date(row.timestamp),
+        timeAgo: timeAgo(row.timestamp),
+        videoUrl: process.env.CLOUDFRONT_URL + "/" + row.file_id,
+      }));
+
+      return posts;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 
 // Get post with the id
 export const getIdPost = async (id: string) => {

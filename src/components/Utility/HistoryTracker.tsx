@@ -5,7 +5,7 @@ import {
   getNavigationState,
   pushRoute,
   saveState,
-} from "@/lib/utils/util";
+} from "@/lib/utils/navigate";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 

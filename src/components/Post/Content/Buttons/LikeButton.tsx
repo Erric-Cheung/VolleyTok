@@ -25,7 +25,7 @@ const LikeButton = ({
     setIsLiked(!isLiked);
   };
 
-  console.log(isLiked);
+  // console.log(isLiked);
 
   return (
     <IconButton

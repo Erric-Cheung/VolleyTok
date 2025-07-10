@@ -15,6 +15,7 @@ const PostScrollVideo = ({
 
   // Observe visibility of the video container
   useEffect(() => {
+    const currentRef = containerRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
@@ -25,12 +26,12 @@ const PostScrollVideo = ({
       }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (containerRef.current) observer.unobserve(containerRef.current);
+      if (currentRef) observer.unobserve(currentRef);
     };
   }, []);
 
