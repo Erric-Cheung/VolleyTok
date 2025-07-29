@@ -1,35 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VolleyTok
+A video platform web application designed specifically for volleyball to watch, upload, and discuss volleyball content. 
 
-## Getting Started
+## Features
+- Scrollable video feed with lazy loading
+- Video post creation, deletion, commenting and liking
+- Sharable modal content with parallel and intercepting routes
+- Auth0 user authentication
 
-First, run the development server:
+## Frameworks and Libraries
+- React.js
+- Next.js
+- Tailwind CSS
+- Zod
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Technologies
+- AWS (S3, Cloudfront, Lambda)
+- Neon Postgres
+- Auth0
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
+## Results
+<img width="1920" height="1027" alt="VolleyTokHome" src="https://github.com/user-attachments/assets/dc61de7e-91a1-4a96-9d89-d74f1c03633e" />  
+<br/>
+<br/>
+<img width="1920" height="1029" alt="VolleyTokProfile" src="https://github.com/user-attachments/assets/93cbd24d-a727-47f4-a21b-1664a751665a" />
+<br/>
+<br/>
+<img width="1920" height="1030" alt="VolleyTokClip" src="https://github.com/user-attachments/assets/d7ad6a44-c1ba-4dd9-a651-142d556855d9" />
